@@ -374,7 +374,13 @@ These may be suggested as enhancements when business requirements explicitly nee
 
 ## OUTPUT FORMAT
 
-Provide your data model using this enhanced YAML structure:
+**IMPORTANT:** Generate a YAML file as the primary output of this prompt.
+
+**File Naming Convention:** `[ApplicationName]_Data_Model.yaml` (e.g., `USF_OSHA_Data_Model.yaml`)
+
+**File Location:** Save in the `data-model/` folder of the project.
+
+**Format:** Use the enhanced YAML structure below:
 
 ```yaml
 # === DATA MODEL SUMMARY ===
@@ -617,3 +623,20 @@ After completing initial analysis:
 10. **Ensure YAML output is both human-readable and machine-parseable**
 
 Remember: Your goal is creating a data model that supports all documented business processes while remaining strictly traceable to source requirements, enhanced with valuable suggestions that address evident gaps without fabricating new business functionality. The data model must be optimized for OLTP operations, fully compatible with Appian platform constraints, and delivered in a format that serves both implementation needs and documentation purposes.
+
+## FINAL OUTPUT REQUIREMENT
+
+**Primary Deliverable:** A complete, valid YAML file containing the full data model following the structure specified in the OUTPUT FORMAT section above.
+
+**File Creation:** Use the Write tool to create the YAML file in the `data-model/` folder with naming convention `[ApplicationName]_Data_Model.yaml`.
+
+**File Contents Must Include:**
+- Data model summary with table counts
+- All primary entities with complete attribute definitions
+- All reference tables with known values
+- All junction tables with relationships
+- Business rule documentation
+- Validation rules section
+- Gaps and validation requirements section
+
+The YAML file should be immediately usable by developers and parseable by automated tools while remaining human-readable for documentation purposes.
