@@ -374,11 +374,19 @@ These may be suggested as enhancements when business requirements explicitly nee
 
 ## OUTPUT FORMAT
 
-**IMPORTANT:** Generate a YAML file as the primary output of this prompt.
+**IMPORTANT:** Generate a YAML file as the ONLY output of this prompt. Do not generate markdown, tables, or any other format.
 
 **File Naming Convention:** `[ApplicationName]_Data_Model.yaml` (e.g., `USF_OSHA_Data_Model.yaml`)
 
 **File Location:** Save in the `data-model/` folder of the project.
+
+**YAML Syntax Requirements:**
+- All YAML must be valid and parseable by standard YAML parsers
+- Strings with special characters (`:`, `"`, `'`, `#`, `&`, etc.) must be quoted
+- For fields with multiple source quotes, use YAML list syntax: `source_quote: ["quote 1", "quote 2"]`
+- Never concatenate strings using "and" outside of quotes
+- Use proper YAML indentation (2 spaces per level)
+- Validate syntax before writing file
 
 **Format:** Use the enhanced YAML structure below:
 
@@ -397,6 +405,7 @@ entities:
     
     # === ENHANCEMENTS (Optional - can be ignored by strict parsers) ===
     source_quote: "Exact text from source document"
+    # For multiple quotes, use list: source_quote: ["quote 1", "quote 2"]
     creation_trigger: "Business process that creates this entity"
     classification: "Required"  # Required|Suggested
     business_rules:
@@ -602,7 +611,10 @@ After completing initial analysis:
 ☐ Enhancement rationale clearly documented
 
 **Output Completeness Validations:**
-☐ YAML syntax is valid and parseable
+☐ YAML syntax is valid and parseable by standard YAML parsers
+☐ No string concatenation using "and" outside of quotes
+☐ Multiple source quotes use YAML list syntax: ["quote1", "quote2"]
+☐ All special characters in strings are properly quoted
 ☐ All entities have complete attribute definitions
 ☐ All foreign key relationships explicitly defined
 ☐ Enhanced properties applied where beneficial
