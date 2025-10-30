@@ -1,0 +1,389 @@
+# Component Registry
+
+This file defines the available screen types and components that can be used in UX screen generation.
+
+## Component Definitions
+
+### alerts
+- **id:** alerts
+- **name:** uxDesign.component.notifications.name
+- **description:** Displays a list of notifications relevant to the application and for the end user.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** A label that describes the list of actions; it may just be "Notifications".
+    - **type:** TEXT
+    - **configuration:** null
+  - **alerts:**
+    - **key:** alerts
+    - **name:** Alerts
+    - **description:** List of active notifications assigned to users.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Provides a descriptive label for this notification.
+        - **type:** TEXT
+        - **configuration:** null
+      - **userFullName:**
+        - **key:** userFullName
+        - **name:** User Name
+        - **description:** Provides the name of the user this notification pertains to.
+        - **type:** TEXT
+        - **configuration:** null
+      - **message:**
+        - **key:** message
+        - **name:** Message
+        - **description:** The notification message content.
+        - **type:** TEXT
+        - **configuration:** null
+      - **timestamp:**
+        - **key:** timestamp
+        - **name:** Timestamp
+        - **description:** When the notification was created.
+        - **type:** DATETIME
+        - **configuration:** null
+
+### tasks
+- **id:** tasks
+- **name:** uxDesign.component.tasks.name
+- **description:** Displays a list of tasks assigned to users.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** A label that describes the list of tasks.
+    - **type:** TEXT
+    - **configuration:** null
+  - **tasks:**
+    - **key:** tasks
+    - **name:** Tasks
+    - **description:** List of active tasks.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Task name or title.
+        - **type:** TEXT
+        - **configuration:** null
+      - **assignees:**
+        - **key:** assignees
+        - **name:** Assignees
+        - **description:** Users assigned to this task.
+        - **type:** TEXT
+        - **configuration:** null
+      - **assignedDate:**
+        - **key:** assignedDate
+        - **name:** Assigned Date
+        - **description:** When the task was assigned.
+        - **type:** DATETIME
+        - **configuration:** null
+
+### header
+- **id:** header
+- **name:** uxDesign.component.header.name
+- **description:** Displays the screen title/header.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** The screen title text.
+    - **type:** TEXT
+    - **configuration:** null
+
+### mainActionButton
+- **id:** mainActionButton
+- **name:** uxDesign.component.mainActionButton.name
+- **description:** Primary action button for the screen.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Button text.
+    - **type:** TEXT
+    - **configuration:** null
+  - **icon:**
+    - **key:** icon
+    - **name:** Icon
+    - **description:** Icon for the button.
+    - **type:** TEXT
+    - **configuration:** null
+  - **entity:**
+    - **key:** entity
+    - **name:** Entity
+    - **description:** The entity this action operates on.
+    - **type:** ENTITY
+    - **configuration:** null
+
+### links
+- **id:** links
+- **name:** uxDesign.component.links.name
+- **description:** Displays quick links to resources or documents.
+- **configuration:**
+  - **links:**
+    - **key:** links
+    - **name:** Links
+    - **description:** List of links.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Link text.
+        - **type:** TEXT
+        - **configuration:** null
+      - **icon:**
+        - **key:** icon
+        - **name:** Icon
+        - **description:** Icon for the link.
+        - **type:** TEXT
+        - **configuration:** null
+
+### recordList
+- **id:** recordList
+- **name:** uxDesign.component.recordList.name
+- **description:** Displays tabular data for an entity.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Table title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **entity:**
+    - **key:** entity
+    - **name:** Entity
+    - **description:** The entity being displayed.
+    - **type:** ENTITY
+    - **configuration:** null
+  - **values:**
+    - **key:** values
+    - **name:** Columns
+    - **description:** Column definitions.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Column header.
+        - **type:** TEXT
+        - **configuration:** null
+      - **property:**
+        - **key:** property
+        - **name:** Property
+        - **description:** Entity property for this column.
+        - **type:** ENTITY_PROP
+        - **configuration:** null
+      - **isEnum:**
+        - **key:** isEnum
+        - **name:** Is Enum
+        - **description:** Whether this property is an enumerated value.
+        - **type:** BOOLEAN
+        - **configuration:** null
+      - **data:**
+        - **key:** data
+        - **name:** Data
+        - **description:** Sample data for this column.
+        - **type:** LIST
+        - **configuration:** null
+
+### description
+- **id:** description
+- **name:** uxDesign.component.description.name
+- **description:** Displays descriptive text or notes.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Description title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **description:**
+    - **key:** description
+    - **name:** Description
+    - **description:** The description text content.
+    - **type:** TEXT
+    - **configuration:** null
+
+### recordDetails
+- **id:** recordDetails
+- **name:** uxDesign.component.recordDetails.name
+- **description:** Displays detailed information about a single record.
+- **configuration:**
+  - **entity:**
+    - **key:** entity
+    - **name:** Entity
+    - **description:** The entity being displayed.
+    - **type:** ENTITY
+    - **configuration:** null
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Section title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **values:**
+    - **key:** values
+    - **name:** Fields
+    - **description:** Field definitions.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Field label.
+        - **type:** TEXT
+        - **configuration:** null
+      - **value:**
+        - **key:** value
+        - **name:** Value
+        - **description:** Field value.
+        - **type:** TEXT
+        - **configuration:** null
+      - **icon:**
+        - **key:** icon
+        - **name:** Icon
+        - **description:** Icon for the field.
+        - **type:** TEXT
+        - **configuration:** null
+      - **property:**
+        - **key:** property
+        - **name:** Property
+        - **description:** Entity property for this field.
+        - **type:** ENTITY_PROP
+        - **configuration:** null
+
+### actions
+- **id:** actions
+- **name:** uxDesign.component.actions.name
+- **description:** Displays action buttons for an entity.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Section title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **entity:**
+    - **key:** entity
+    - **name:** Entity
+    - **description:** The entity these actions operate on.
+    - **type:** ENTITY
+    - **configuration:** null
+  - **values:**
+    - **key:** values
+    - **name:** Actions
+    - **description:** Action definitions.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Action button text.
+        - **type:** TEXT
+        - **configuration:** null
+      - **icon:**
+        - **key:** icon
+        - **name:** Icon
+        - **description:** Action icon.
+        - **type:** TEXT
+        - **configuration:** null
+      - **type:**
+        - **key:** type
+        - **name:** Type
+        - **description:** Action type (CREATE, UPDATE, DELETE, OTHER).
+        - **type:** ENTITY_ACTION
+        - **configuration:** null
+
+### contacts
+- **id:** contacts
+- **name:** uxDesign.component.contacts.name
+- **description:** Displays associated users or contacts.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Section title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **values:**
+    - **key:** values
+    - **name:** Contacts
+    - **description:** Contact definitions.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Contact role or type.
+        - **type:** TEXT
+        - **configuration:** null
+      - **association:**
+        - **key:** association
+        - **name:** Association
+        - **description:** User name or identifier.
+        - **type:** TEXT
+        - **configuration:** null
+
+### eventHistory
+- **id:** eventHistory
+- **name:** uxDesign.component.eventHistory.name
+- **description:** Displays a timeline of events or history.
+- **configuration:**
+  - **label:**
+    - **key:** label
+    - **name:** Label
+    - **description:** Section title.
+    - **type:** TEXT
+    - **configuration:** null
+  - **values:**
+    - **key:** values
+    - **name:** Events
+    - **description:** Event definitions.
+    - **type:** NESTED
+    - **configuration:**
+      - **label:**
+        - **key:** label
+        - **name:** Label
+        - **description:** Event description.
+        - **type:** TEXT
+        - **configuration:** null
+      - **actor:**
+        - **key:** actor
+        - **name:** Actor
+        - **description:** Who performed the action.
+        - **type:** TEXT
+        - **configuration:** null
+      - **color:**
+        - **key:** color
+        - **name:** Color
+        - **description:** Color code for the event marker.
+        - **type:** TEXT
+        - **configuration:** null
+      - **date:**
+        - **key:** date
+        - **name:** Date
+        - **description:** When the event occurred.
+        - **type:** DATE
+        - **configuration:** null
+
+## Screen Types
+
+### landing
+- **type:** landing
+- **description:** Dashboard or home page screen
+- **allowed_components:** [header, alerts, tasks, mainActionButton, links, recordList]
+
+### recordDetails
+- **type:** recordDetails
+- **description:** Detailed view of a single record
+- **allowed_components:** [header, description, recordDetails, actions, contacts, recordList, eventHistory]
+
+### recordForm
+- **type:** recordForm
+- **description:** Form for creating or editing a record
+- **required_fields:** [dataModelUuid, name, description]
+- **note:** Form fields are automatically generated from the entity definition

@@ -1,0 +1,611 @@
+screens:
+  - type: landing
+    name: "Applicant Dashboard"
+    description: "Main landing page for applicants to view their applications, start new applications, and access important links and notifications"
+    components:
+      - type: header
+        values:
+          - label: "OSHA Prerequisites Portal"
+
+      - type: alerts
+        label: "Notifications"
+        values:
+          - label: "Application Returned for Review"
+            userFullName: "John Smith"
+            message: "Your application for OSHA #500 has been returned. Please review the feedback and resubmit with the requested information."
+            timestamp: DATE_TIME
+          - label: "Application Approved"
+            userFullName: "Jane Doe"
+            message: "Congratulations! Your application for OSHA #501 has been approved. Check your email for the Enrole registration link."
+            timestamp: DATE_TIME
+          - label: "Submission Confirmed"
+            userFullName: "Mike Johnson"
+            message: "We have received your application for OSHA #5400. Our team will review it shortly."
+            timestamp: DATE_TIME
+
+      - type: tasks
+        label: "My Tasks"
+        tasks:
+          - label: "Complete OSHA #500 Application"
+            assignees: "You"
+            assignedDate: DATE_TIME
+          - label: "Respond to Reviewer Comments"
+            assignees: "You"
+            assignedDate: DATE_TIME
+          - label: "Upload Missing Employment Documentation"
+            assignees: "You"
+            assignedDate: DATE_TIME
+
+      - type: mainActionButton
+        label: "Start New Application"
+        icon: "plus"
+        entity: "APPLICATION"
+
+      - type: links
+        links:
+          - label: "OSHA Course Information"
+            icon: "info-circle"
+          - label: "Prerequisites Guide"
+            icon: "file-text"
+          - label: "Frequently Asked Questions"
+            icon: "question-circle"
+          - label: "Contact Support"
+            icon: "envelope"
+
+      - type: recordList
+        label: "My Applications"
+        entity: "APPLICATION"
+        values:
+          - label: "Application ID"
+            property: "application_id"
+            isEnum: false
+            data: ["APP-2024-001", "APP-2024-002", "APP-2024-003"]
+          - label: "Course"
+            property: "current_company"
+            isEnum: false
+            data: ["OSHA #500", "OSHA #501", "OSHA #5400"]
+          - label: "Submitted"
+            property: "submission_date"
+            isEnum: false
+            data: [DATE_TIME, DATE_TIME, DATE_TIME]
+          - label: "Status"
+            property: "application_status"
+            isEnum: true
+            data: ["UNDER_REVIEW", "APPROVED", "RETURNED"]
+          - label: "Decision"
+            property: "final_decision"
+            isEnum: true
+            data: ["Pending", "APPROVE", "RETURN"]
+
+  - type: landing
+    name: "Reviewer Dashboard"
+    description: "Administrative landing page for approvers to review pending applications, view tasks, and access reports"
+    components:
+      - type: header
+        values:
+          - label: "OSHA Application Review Center"
+
+      - type: alerts
+        label: "System Alerts"
+        values:
+          - label: "Watch List Update Required"
+            userFullName: "System Administrator"
+            message: "Monthly watch list update is due. Please upload the latest watch list spreadsheet."
+            timestamp: DATE_TIME
+          - label: "New Application Submitted"
+            userFullName: "Maria Garcia"
+            message: "New application for OSHA #500 submitted and ready for review."
+            timestamp: DATE_TIME
+          - label: "Application Approaching Deadline"
+            userFullName: "Robert Chen"
+            message: "Application APP-2024-015 course starts in 3 days. Immediate review required."
+            timestamp: DATE_TIME
+
+      - type: tasks
+        label: "Review Queue"
+        tasks:
+          - label: "Review OSHA #500 Application - Maria Garcia"
+            assignees: "Sarah Johnson"
+            assignedDate: DATE_TIME
+          - label: "Review OSHA #501 Application - Robert Chen"
+            assignees: "Sarah Johnson"
+            assignedDate: DATE_TIME
+          - label: "Verify Resubmission - John Smith"
+            assignees: "Sarah Johnson"
+            assignedDate: DATE_TIME
+
+      - type: mainActionButton
+        label: "View All Applications"
+        icon: "list"
+        entity: "APPLICATION"
+
+      - type: links
+        links:
+          - label: "OSHA Watch List"
+            icon: "exclamation-triangle"
+          - label: "CSP Certification Verification"
+            icon: "check-circle"
+          - label: "CIH Certification Verification"
+            icon: "check-circle"
+          - label: "Marine Chemist Directory"
+            icon: "globe"
+          - label: "Upload Watch List"
+            icon: "upload"
+
+      - type: recordList
+        label: "Pending Applications"
+        entity: "APPLICATION"
+        values:
+          - label: "Application ID"
+            property: "application_id"
+            isEnum: false
+            data: ["APP-2024-015", "APP-2024-016", "APP-2024-017"]
+          - label: "Applicant Name"
+            property: "current_company"
+            isEnum: false
+            data: ["Maria Garcia", "Robert Chen", "Lisa Anderson"]
+          - label: "Course"
+            property: "current_company"
+            isEnum: false
+            data: ["OSHA #500", "OSHA #501", "OSHA #5400"]
+          - label: "Submitted"
+            property: "submission_date"
+            isEnum: false
+            data: [DATE_TIME, DATE_TIME, DATE_TIME]
+          - label: "Days Until Start"
+            property: "version_number"
+            isEnum: false
+            data: ["3", "14", "21"]
+          - label: "Status"
+            property: "application_status"
+            isEnum: true
+            data: ["SUBMITTED", "UNDER_REVIEW", "SUBMITTED"]
+
+  - type: recordDetails
+    name: "Application Details"
+    description: "Comprehensive view of a single application showing all applicant information, course selections, employment history, credentials, and review status"
+    components:
+      - type: header
+        values:
+          - label: "Application Details"
+
+      - type: description
+        label: "Application Summary"
+        description: "This application has been submitted for review. The applicant is requesting enrollment in OSHA trainer courses based on their demonstrated safety experience and qualifications. Review all sections carefully before making a decision."
+
+      - type: recordDetails
+        entity: "APPLICATION"
+        label: "Applicant Information"
+        values:
+          - label: "Legal Name"
+            value: "Maria Garcia"
+            icon: "user"
+            property: "current_company"
+          - label: "Email"
+            value: "maria.garcia@example.com"
+            icon: "envelope"
+            property: "enrole_registration_link"
+          - label: "Phone"
+            value: "(813) 555-1234"
+            icon: "phone"
+            property: "current_company"
+          - label: "Current Job Title"
+            value: "Safety Manager"
+            icon: "user-circle"
+            property: "current_job_title"
+          - label: "Current Company"
+            value: "ABC Construction Inc."
+            icon: "user-circle"
+            property: "current_company"
+          - label: "Application Status"
+            value: "Under Review"
+            icon: "info-circle"
+            property: "application_status"
+          - label: "Submission Date"
+            value: DATE_TIME
+            icon: "calendar"
+            property: "submission_date"
+          - label: "Version"
+            value: "1"
+            icon: "file"
+            property: "version_number"
+
+      - type: recordDetails
+        entity: "APPLICANT"
+        label: "Contact Information"
+        values:
+          - label: "Mailing Address"
+            value: "123 Main Street"
+            icon: "location-arrow"
+            property: "mailing_address"
+          - label: "City"
+            value: "Tampa"
+            icon: "map"
+            property: "city"
+          - label: "State"
+            value: "FL"
+            icon: "map"
+            property: "state"
+          - label: "ZIP Code"
+            value: "33601"
+            icon: "map"
+            property: "zip_code"
+
+      - type: recordList
+        label: "Requested Courses"
+        entity: "APPLICATION_COURSE"
+        values:
+          - label: "Course Number"
+            property: "application_id"
+            isEnum: false
+            data: ["OSHA #500", "OSHA #501"]
+          - label: "Course Name"
+            property: "application_id"
+            isEnum: false
+            data: ["Trainer Course - Construction Industry", "Trainer Course - General Industry"]
+          - label: "Start Date"
+            property: "application_id"
+            isEnum: false
+            data: [DATE_TIME, DATE_TIME]
+          - label: "Location"
+            property: "application_id"
+            isEnum: false
+            data: ["Wesley Chapel, FL", "Tampa, FL"]
+          - label: "Prerequisites Met"
+            property: "application_id"
+            isEnum: true
+            data: ["Pending Review", "Pending Review"]
+
+      - type: recordList
+        label: "Employment History"
+        entity: "EMPLOYMENT_HISTORY"
+        values:
+          - label: "Employer"
+            property: "application_id"
+            isEnum: false
+            data: ["ABC Construction Inc.", "XYZ Safety Services", "General Contractors LLC"]
+          - label: "Job Title"
+            property: "application_id"
+            isEnum: false
+            data: ["Safety Manager", "Safety Coordinator", "Safety Specialist"]
+          - label: "Start Date"
+            property: "application_id"
+            isEnum: false
+            data: ["2020-01-15", "2017-06-01", "2014-03-10"]
+          - label: "End Date"
+            property: "application_id"
+            isEnum: false
+            data: ["Present", "2019-12-31", "2017-05-15"]
+          - label: "Safety %"
+            property: "application_id"
+            isEnum: false
+            data: ["85%", "60%", "45%"]
+          - label: "Years Experience"
+            property: "application_id"
+            isEnum: false
+            data: ["4.8", "2.5", "3.2"]
+
+      - type: contacts
+        label: "Application Contacts"
+        values:
+          - label: "Applicant"
+            association: "Maria Garcia"
+          - label: "Assigned Reviewer"
+            association: "Sarah Johnson"
+
+      - type: actions
+        label: "Application Actions"
+        entity: "APPLICATION"
+        values:
+          - label: "Approve Application"
+            icon: "check-circle"
+            type: "UPDATE"
+          - label: "Return for Information"
+            icon: "comment"
+            type: "UPDATE"
+          - label: "Deny Application"
+            icon: "times-circle"
+            type: "UPDATE"
+          - label: "View Full PDF"
+            icon: "file-pdf"
+            type: "OTHER"
+          - label: "Download Supporting Documents"
+            icon: "download"
+            type: "OTHER"
+
+      - type: eventHistory
+        label: "Application Timeline"
+        values:
+          - label: "Application submitted by applicant"
+            actor: "Maria Garcia"
+            color: "#2196F3"
+            date: "2024-10-15"
+          - label: "Application assigned for review"
+            actor: "System"
+            color: "#9C27B0"
+            date: "2024-10-15"
+          - label: "Review started"
+            actor: "Sarah Johnson"
+            color: "#FF9800"
+            date: "2024-10-16"
+          - label: "Watch list check completed"
+            actor: "Sarah Johnson"
+            color: "#4CAF50"
+            date: "2024-10-16"
+
+  - type: recordDetails
+    name: "Course Catalog"
+    description: "Detailed view of available OSHA courses showing course information, prerequisites, and registration requirements"
+    components:
+      - type: header
+        values:
+          - label: "Course Details"
+
+      - type: description
+        label: "Course Overview"
+        description: "This OSHA trainer course prepares qualified safety professionals to become authorized OSHA Outreach trainers. Applicants must meet specific prerequisite requirements including completion of foundational OSHA courses and documented safety experience in the applicable industry."
+
+      - type: recordDetails
+        entity: "COURSE"
+        label: "Course Information"
+        values:
+          - label: "Course Number"
+            value: "OSHA #500"
+            icon: "file-text"
+            property: "course_number"
+          - label: "Course Name"
+            value: "Trainer Course in Occupational Safety and Health for the Construction Industry"
+            icon: "file-text"
+            property: "course_name"
+          - label: "Start Date"
+            value: DATE_TIME
+            icon: "calendar"
+            property: "start_date"
+          - label: "End Date"
+            value: DATE_TIME
+            icon: "calendar"
+            property: "end_date"
+          - label: "Location"
+            value: "Wesley Chapel, FL"
+            icon: "location-arrow"
+            property: "location_city"
+          - label: "Contract Course"
+            value: "No"
+            icon: "info-circle"
+            property: "is_contract_course"
+
+      - type: recordDetails
+        entity: "COURSE"
+        label: "Prerequisites Required"
+        values:
+          - label: "Required Course"
+            value: "OSHA #510 (completed within 7 years)"
+            icon: "check-square"
+            property: "course_name"
+          - label: "Experience Required"
+            value: "5 years construction safety experience"
+            icon: "check-square"
+            property: "course_name"
+          - label: "Degree Substitution"
+            value: "Bachelor's in OSH or IH (substitutes for 2 years)"
+            icon: "check-square"
+            property: "course_name"
+          - label: "Certification Substitution"
+            value: "CSP or CIH (substitutes for 2 years)"
+            icon: "check-square"
+            property: "course_name"
+
+      - type: recordList
+        label: "Enrolled Applicants"
+        entity: "APPLICATION"
+        values:
+          - label: "Applicant Name"
+            property: "current_company"
+            isEnum: false
+            data: ["Maria Garcia", "John Smith", "Lisa Anderson"]
+          - label: "Application ID"
+            property: "application_id"
+            isEnum: false
+            data: ["APP-2024-015", "APP-2024-001", "APP-2024-008"]
+          - label: "Status"
+            property: "application_status"
+            isEnum: true
+            data: ["UNDER_REVIEW", "APPROVED", "APPROVED"]
+          - label: "Approved Date"
+            property: "decision_date"
+            isEnum: false
+            data: ["Pending", DATE_TIME, DATE_TIME]
+
+      - type: actions
+        label: "Course Actions"
+        entity: "COURSE"
+        values:
+          - label: "Apply for This Course"
+            icon: "plus"
+            type: "CREATE"
+          - label: "View Full Requirements"
+            icon: "file-text"
+            type: "OTHER"
+          - label: "Export Applicant List"
+            icon: "download"
+            type: "OTHER"
+
+      - type: eventHistory
+        label: "Course History"
+        values:
+          - label: "Course created in system"
+            actor: "System Import"
+            color: "#2196F3"
+            date: "2024-09-01"
+          - label: "Registration opened"
+            actor: "System"
+            color: "#4CAF50"
+            date: "2024-09-15"
+          - label: "First application received"
+            actor: "John Smith"
+            color: "#FF9800"
+            date: "2024-10-01"
+
+  - type: recordDetails
+    name: "Application Review"
+    description: "Detailed review interface for approvers showing all application components, verification checklists, and decision-making tools"
+    components:
+      - type: header
+        values:
+          - label: "Application Review Workspace"
+
+      - type: description
+        label: "Review Instructions"
+        description: "Verify all prerequisites have been met by checking prerequisite course completion, validating employment experience, and confirming the applicant is not on any watch lists. Document your findings and make a final decision to approve, deny, or return for additional information."
+
+      - type: recordDetails
+        entity: "APPLICATION"
+        label: "Review Checklist"
+        values:
+          - label: "Prerequisite Course Verified"
+            value: "OSHA #510 completed 2022-05-10"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "Course Date Validation"
+            value: "Within 7-year requirement"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "Employment Experience"
+            value: "10.5 years total, 7.2 years qualified"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "35% Safety Threshold"
+            value: "Met for 3 positions"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "OSHA Watch List"
+            value: "Not found"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "OTI Centers Watch List"
+            value: "Not found"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "Supporting Documents"
+            value: "All required documents uploaded"
+            icon: "check-circle"
+            property: "application_status"
+          - label: "Applicant Signature"
+            value: "Digitally signed via DocuSign"
+            icon: "check-circle"
+            property: "application_status"
+
+      - type: recordDetails
+        entity: "APPLICATION"
+        label: "Reviewer Notes"
+        values:
+          - label: "Previous OSHA Action"
+            value: "No"
+            icon: "info-circle"
+            property: "has_been_subject_to_osha_action"
+          - label: "Special Considerations"
+            value: "None noted"
+            icon: "info-circle"
+            property: "decision_notes"
+          - label: "AI Recommendation"
+            value: "Recommend Approval - All prerequisites met"
+            icon: "info-circle"
+            property: "decision_notes"
+
+      - type: recordList
+        label: "Supporting Documents"
+        entity: "APPLICATION_SUPPORTING_DOCUMENT"
+        values:
+          - label: "Document Type"
+            property: "application_id"
+            isEnum: true
+            data: ["OSHA 510 Certificate", "Employment Verification Letter", "CSP Certification", "Photo ID"]
+          - label: "Upload Date"
+            property: "application_id"
+            isEnum: false
+            data: [DATE_TIME, DATE_TIME, DATE_TIME, DATE_TIME]
+          - label: "File Name"
+            property: "application_id"
+            isEnum: false
+            data: ["OSHA_510_Certificate.pdf", "Employment_Letter.pdf", "CSP_Card.pdf", "Drivers_License.pdf"]
+          - label: "Status"
+            property: "application_id"
+            isEnum: true
+            data: ["Verified", "Verified", "Verified", "Verified"]
+
+      - type: contacts
+        label: "Review Team"
+        values:
+          - label: "Primary Reviewer"
+            association: "Sarah Johnson"
+          - label: "Applicant"
+            association: "Maria Garcia"
+          - label: "System Administrator"
+            association: "Admin User"
+
+      - type: actions
+        label: "Review Actions"
+        entity: "APPLICATION"
+        values:
+          - label: "Approve and Send Enrollment Link"
+            icon: "check-circle"
+            type: "UPDATE"
+          - label: "Return with Comments"
+            icon: "comment-alt"
+            type: "UPDATE"
+          - label: "Deny Application"
+            icon: "times-circle"
+            type: "UPDATE"
+          - label: "Request Additional Information"
+            icon: "envelope"
+            type: "OTHER"
+          - label: "Check Watch Lists"
+            icon: "search"
+            type: "OTHER"
+          - label: "Verify Certifications"
+            icon: "check-square"
+            type: "OTHER"
+          - label: "Download All Documents"
+            icon: "download"
+            type: "OTHER"
+          - label: "View Change History"
+            icon: "clipboard-list"
+            type: "OTHER"
+
+      - type: eventHistory
+        label: "Review Activity"
+        values:
+          - label: "Application received"
+            actor: "Maria Garcia"
+            color: "#2196F3"
+            date: "2024-10-15"
+          - label: "Assigned to reviewer"
+            actor: "System"
+            color: "#9C27B0"
+            date: "2024-10-15"
+          - label: "Review initiated"
+            actor: "Sarah Johnson"
+            color: "#FF9800"
+            date: "2024-10-16"
+          - label: "Watch list checks completed"
+            actor: "Sarah Johnson"
+            color: "#4CAF50"
+            date: "2024-10-16"
+          - label: "Prerequisite courses verified"
+            actor: "Sarah Johnson"
+            color: "#4CAF50"
+            date: "2024-10-16"
+          - label: "Employment history validated"
+            actor: "Sarah Johnson"
+            color: "#4CAF50"
+            date: "2024-10-16"
+
+  - type: recordForm
+    dataModelUuid: "APPLICATION"
+    name: "New Application Form"
+    description: "Wizard-based application form for applicants to request enrollment in OSHA trainer courses, including course selection, prerequisite documentation, employment history, and credential submission"
+
+  - type: recordForm
+    dataModelUuid: "APPLICANT"
+    name: "Applicant Registration"
+    description: "Self-registration form for new applicants to create their account in the OSHA Prerequisites Portal, available in English and Spanish"

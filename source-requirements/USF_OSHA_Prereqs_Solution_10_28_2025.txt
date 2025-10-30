@@ -1,0 +1,499 @@
+Solution Description for University of South Florida, OSHA Prerequisites Application
+
+Solution Description	2
+One Sentence Summary	2
+Description of As-Is	2
+Description of To-Be	3
+Key Actors	4
+Key Processes	4
+Notable Business Rules	6
+Systems & Architecture	6
+Integrations	6
+Automation	7
+Reports and Content Management	8
+Records	8
+Reports	8
+Platform Characteristics	8
+Process Metrics	8
+Document Management	8
+Infrastructure & Security	9
+Auditability	9
+Out of Scope	9
+Assumptions	9
+Appendix A - Links	10
+
+Solution Description
+One Sentence Summary
+The USF OSHA Prerequisites application will replace a manual process for reviewing and approving applications to enroll in courses for the purpose of becoming a certified OSHA Trainer, where applicants for these courses must show that they meet federally-mandated requirements to take the course and become a trainer.
+Description of As-Is
+The OSHA approver team manages the current process, which is almost completely manual. The only computer systems involved are external, and they are as follows: 
+	•	Box is used for storing files, and the storage of files is also used for process/data purposes. (For example, we know who is approved for a course because those people have approval letters in Box in folders with their name on them). 
+	•	Enrole is used for course registration data. 
+	•	OSHA and certifying agencies like CSP maintain lists online of suspended and credentialed individuals.
+This process revolves around application and prerequisite review for who can be an OSHA trainer. OSHA trainers are employees in an organization who can supervise and certify other employees for OSHA compliance. For example, an OSHA trainer can supervise 10 hours of required OSHA training in a given matter for all of the other employees at a company. To become a certified OSHA trainer, you must take and pass a course. A limited number of Universities are allowed to offer these courses, generally one University per region. USF is the authorized center for the “Atlanta” region, which includes several Southeastern states. In order to be able to enroll in one of the classes to become an OSHA trainer in a particular domain (or re-up your certification), you must satisfy certain prerequisites. These prerequisites (and the form for demonstrating them) are mandated by OSHA. The process we are modernizing is the process whereby applicants submit an application form to request enrollment in a course, the University reviews the form to determine whether they meet the requirements, and they are approved (and sent an enrollment link), denied, or asked for additional information or clarification. 
+Pain points of the current process include:
+	•	﻿Disorganization and difficulty tracking applications for various classes and dates.
+	•	﻿Early submissions are not reviewed immediately.
+	•	﻿Manual data verification by staff.
+	•	The current legacy system is a risk because it is dependent on institutional knowledge of one developer. 
+	•	Fragmented Application Intake: Applications are currently received via at least three different email inboxes (USFOTIC cards, registration, and approver’s direct email), which are then manually forwarded and consolidated.
+	•	Inconsistent Document Quality: Applicants submit documents in various formats and quality levels, including poorly angled photos of cards on desks. This forces the reviewer to manually screenshot, crop, rotate, and convert these images into usable PDFs before they can be processed.
+	•	Applicant Anxiety and Follow-Up: Applicants frequently email to check the status of their application because they don't receive an automatic confirmation and are unsure if their submission was successful.
+ Description of To-Be
+In the to-be application, USF is envisioning a modern UI that will collect the OSHA course application necessary to generate the official OSHA Prerequisite Verification PDF (found here on page 11), which is required for audit purposes.
+The process is not expected to be fully automated – with review remaining manual due to some subjective aspects of the review. Long-term, this is a good candidate for near-full automation by AI, but for this project, our goal is reduce back and forth cycles and make sure that the reviewer only has to take the time to actually review applications that are complete, meet certain objective validations, and are free from common error cases.
+Applicants will create an account on USF’s Appian system via a self-registration Portal, then log in as authenticated users. They will follow a wizard-like experience in SAIL to provide the information necessary to populate the OSHA Prerequisite Verification form, including uploading supporting documentation. Automated features, like validations, will help them complete the application fully and accurately. 
+Once the application is complete, the entered data will be populated into the official OSHA Prerequisite Verification PDF and the Applicant will complete by DocuSigning their submission. The e-signed PDF will then be sent to the Approver for review and approval. The Approver may be assisted in the review by copies of the data in a SAIL UI that offer functionality not available in PDF, such as links to context or AI recommendations. The Approver can approve, deny, or send back with comments/questions/feedback. When the Approver is ready to approve, the final outcome will be populated in the same OSHA Prerequisite Verification PDF and the Approver will digitally sign the final copy of the pdf. The Applicant will be notified via email that their application has been reviewed, and if approved they will be given the link to Enrole and the registration code needed to enroll in the course.
+Appian will handle document/content management for the initial release. For example, supporting documentation uploaded by applicants will be stored in Appian. Appian may integrate with the existing Box system at a later date.
+Additionally, in the new system, Applicants will have access to a self-service status page to check on the progress of their application, reducing the need for follow-up emails. The system will also provide automated email confirmations upon successful submission. For applicants applying to multiple courses, the interface will allow for a seamless, single-session application process, pre-populating common data to avoid redundant entry. All Applicant views will be available in both English and Spanish.
+In the future, this application would also be used for completing enrollment and managing course progress. Those features will be considered beyond MVP 1.
+Key Actors
+	•	Approvers:  Trained USF employees who review applications and determine whether the Applicant is qualified to take the course (and has correctly documented this) according to the federal regulations.
+	•	Applicants: Prospective course attendees who apply for the courses and whose prerequisites are reviewed. 
+	•	Facilitators: Support course instructors, who will need access to reports on approved participants to verify enrollment.
+	•	Leadership: Read-only role with ability to see most or all data in the system.
+	•	Administrators: Application admins that will be able to manage reference data (such as internal watch list).
+Key Processes
+Applicant Self-Registration: Applicants will have the ability to self register their Appian accounts via an Appian Portal. This should be available in both English and Spanish.
+Application Submission: The application will guide the applicant through a wizard to fill out the prerequisite form and upload the necessary documentation. An official pdf copy of the OSHA Prerequisite Verification form will be generated for each course selected in the application. 
+The wizard will not exactly match the pdf; rather, the wizard will gather all necessary information and use that to automatically generate the pdf application for the applicant. Prerequisites that can be verified automatically, will be.
+Applicants will be able to select courses based on the courses available in the Courses synced record. Depending on the course(s) selected, they will have to meet certain prerequisites.   Course information fields (number, start date , end date, and location) are all mandatory for all applications. (The pdf has a sentence about skipping fields. That instruction is wrong/does not apply to the foregoing.)
+Based on the course selected, we will dynamically allow the applicant to select any prerequisite course(s) that apply, and collect supporting documentation for those.
+“Contract” courses are private offerings for specific institutions, and only their employees can enroll. Applicants for these courses must provide a registration code from their employer, which the system will validate. All future courses, including contract courses, will be visible to applicants, but registration for contract courses requires a valid registration code. The registration codes will be imported into Appian via course data.
+Applicants shall be able to apply for 2 or more courses on a single prerequisite application. 
+Validations:
+	•	For the prior employer section, all fields are required.
+	•	For the paragraph response fields, consider the guidance from the Verification Form Guidance document we received. 
+	•	A maximum of 2 years of experience can be substituted. 
+	•	For field 17, provide a field for “hours per week devoted to safety-related tasks” and a field for “hours worked per week”.
+	•	See course requirements in appendix.
+	•	Cannot process applications for contracted courses without the correct registration code.
+Instructions will be provided in the wizard next to each field. 
+When the applicant is ready to submit, we generate a pdf for each course they are applying for, and have them digitally sign the application. The application may need to be re-signed if they edit and re-submit. 
+Application Review: Once submitted, the application will be routed to the approver for review. The approver will be able to see all the information in one place and make a decision.
+The approver will have three distinct actions they can take on any application:
+	•	Approve: Finalizes the application and notifies the student.
+	•	Return for Information: A "soft denial" that sends the application back to the applicant with comments if information is missing or unclear.
+	•	Deny: A "hard denial" for applicants who are definitively ineligible.
+The reviewer will go to other linked websites to verify that the applicant is not on a public watch list. They will also check against an internal watch list, which is maintained in a spreadsheet that will be uploaded into Appian on a monthly basis. We will create email reminders to the admin persona (once per month) to upload the current version of the list. 
+A specific sub-process will be required for applicants found on a watch list. They can only be approved if they provide an official "reinstatement letter" from OSHA, and the system must accommodate the review and attachment of this letter. 
+The reviewer will check claimed certifications and prerequisite courses in external websites that are accessible from the Appian interface (see Appendix-A for URLs). Verifying transcripts is a visual verification of the uploaded transcript the Applicant included in the submission to confirm it has a seal and signature. 
+In the event that there are 2 or more courses on a single application prerequisite verification must be performed for each course within the application 
+For the subjective/judgment part of the review, the reviewer must manually read the long-form responses and determine whether they satisfy the criteria. We may leverage additional AI tooling and focused guidance to reduce the manual overhead associated with these reviews.
+Watch List Management: On a monthly basis, the updated watch lists will need to be imported into Appian for use in this process. The application administrators will have access to do this update either through spreadsheet import or manual actions to update one-off.
+
+Applications that were sent back for review are not closed automatically. Resubmissions from applicants shall be tracked on the same application case. Change tracking shall be available across versions of the same application so that reviewers have the opportunity to see what’s changed if they want to. 
+Notable Business Rules
+	•	35% cutoff for percentage of time spent on safety related tasks when listing prior employment (field 17); this cutoff is not transparent to the users and should not be explicitly revealed
+	•	2 week cutoff for applications prior to course start date
+	•	Course start date is mandatory in all cases as part of the application; this is one of the things that identifies which course they are applying for
+	•	An approved degree (one of two specific majors) can substitute for 2 years of required experience. 
+	•	Credentials must not expire before course start date
+	•	Key prerequisite courses, such as the OSHA 510 and 511, are only valid for seven years. The system must validate that the completion date of these submitted certificates is within this seven-year window. Additional information in Appendix-B.
+	•	Approximately once a month, 12 future months of course data will be imported into Appian.
+
+Systems & Architecture
+
+Integrations
+The integration strategy for this application is not fully developed and will likely change from what is outlined in this document.  For purposes of this estimation, we are assuming integrations with the following systems.
+External System
+Integration Mechanism
+New or Existing Integration?
+Description
+Enrole
+Synced Record
+Existing
+Source for Course record
+
+OSHA Watch List
+Monthly import
+New
+Check applicant against a list of suspended or otherwise restricted applicants
+
+Board of Certified Safety Professionals
+iFrame or external link
+New
+To validate certifications: CSP, CIH, CMC, CHMM
+Docusign
+API
+Existing
+For applicants and approvers to sign applications
+Informer
+API or CSV
+New
+Currently, course data is accessible in USF’s Informer system. (informer is the reporting layer over Enrole).  This data can be shared with Appian via CSV or possibly an API. We must explore the viability of the API, as that is preferred.
+
+Some additional integration notes:
+Two Distinct Watch Lists: Verification requires checking against two separate lists, not just one:
+	•	The OSHA Outreach Trainer Watch List: An official, web-based OSHA list of suspended trainers.
+	•	The OTI Education Centers Watch List: A manually created and shared spreadsheet among all OTI centers listing problematic applicants who may not be official trainers.
+Verification of Non-USF Certificates: A significant manual step involves verifying the legitimacy of prerequisite course certificates (e.g., OSHA 510) issued by other OTI centers like Georgia Tech. This is currently done via discretionary emails or phone calls and was instituted due to receiving fakes. This is a candidate for a potential future integration or a required manual task in the new system.
+Additional Certification Verifications: The list of professional certifications to verify should include CHMM, CSP, CIH, and CMC.  The appropriate certifications will be verified manually with the correct certifying body, as needed. 
+
+Automation
+
+Automation
+Description
+Composer
+Appian Composer will be utilized to establish the foundation elements of the application
+
+Data Fabric Insights
+DFI can be utilized for any reporting needs
+Process Insights
+Process Insights can be utilized to expose process throughputs and bottlenecks
+
+Reports and Content Management
+Records
+	•	Applicants
+	•	Courses (Course data will be imported from Enrole/Informer.  TBD whether Appian will obtain data via CSV import or Informer API)
+	•	Applications
+	•	Application Courses (for any application, an applicant can request to take multiple courses. For organizationable purposes, these need to be grouped by the Applicant’s application, but each application course is separated to allow for individual prerequisite validation) 
+	•	Supporting Documents (important for audit purposes; examples may include copies of email communications with applicants)
+
+Reports
+There is not currently any reporting, but the customer is excited about the opportunity to get the kind of common reports you might expect, like a dashboard showing application numbers, historical application and course enrollment data, and so on.
+	•	﻿Task Report: Tracks in-progress applications.
+	•	﻿Completed Report: Search by applicant or date range.
+	•	﻿Facilitators can access a list of approved applicants per class.
+Platform Characteristics 
+Process Metrics
+	•	Users
+	•	X applicants annually (infrequent users)
+	•	1 reviewer/approver
+	•	X facilitators
+	•	X leadership staff
+	•	Applications
+	•	X per year
+	•	Approve rate %
+Document Management
+	•	Assume that out of the box Appian Document management will be used.
+Infrastructure & Security
+	•	Applicants will be basic Appian users, and internal USF employees will login via SSO (already established)
+On-Premise and/or Cloud
+Cloud
+Authorization
+Basic Auth (external), LDAP/SSO (internal)
+Authentication
+Basic Auth (external), LDAP/SSO (internal)
+Environments
+Dev, Test, Production
+Plugins
+Existing approved AppMarket plugins will be used as needed to support the use case
+
+Auditability
+There must be individual, signed PDFs for each course an applicant applied for. Supporting documents like attachments or emails must be stored for auditing purposes.
+Reviewers would like the ability to compare details across application versions.  In the event that an application is sent back, they should be able to see what’s been changed.
+Out of Scope
+Items listed in this section are out of scope and not included as part of the initial estimate. Instead, this is meant to document the direction that future development may include.
+	•	Modules or applications other than Prerequisites
+Assumptions
+In addition to the information contained in other sections, the following items have been assumed for the purpose of the estimate: 
+
+Composer:
+	•	Appian Composer will be utilized to generate the framework of the application where appropriate. This will involve iteration and experimentation with USF and Appian to feed in the correct prompts and make the necessary updates prior to development starting.
+
+Data: 
+	•	Most reference data can be defined within Appian and can be maintained by an Appian administrator. Courses will be sourced from Enrole’s MS Access database.
+	•	Transactional data can be maintained in the Appian MariaDB database.
+
+Language
+	•	English and Spanish for applicant experience
+	•	English for all other users
+
+
+Appendix A - Links
+
+https://www.usfosha.com/?lgr=110f2a3e-aee0-4d4f-9c88-c3a8c01c4681
+https://www.enrole.com/usf/jsp/ 
+https://portalabih.cyzap.net/dzapps/dbzap.bin/apps/assess/webmembers/secure/manage?webid=ABIH&pToolCode=cert-search&pAdd=Yes
+https://marinechemistassociation.com/find-a-chemist/
+https://directory.bcsp.org/
+https://www.osha.gov/training/outreach/trainers/watchlist
+
+
+Appendix B - Course Requirements
+
+
+	•	OSHA #500 Trainer Course in Occupational Safety and Health for the Construction Industry - OSHA #510 Occupational Safety and Health Standards for the Construction Industry course and five years of construction safety experience. A college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience. 
+	•	OSHA #501 Trainer Course in Occupational Safety and Health Standards for General Industry - OSHA #511 Occupational Safety and Health Standards for General Industry course and five years of general industry safety experience. A college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience.
+	•	OSHA #5400 Trainer Course in Occupational Safety and Health Standards for the Maritime Industry – OSHA #5410 Occupational Safety and Health Standards for the Maritime Industry Course and three years of maritime industry safety experience. Additional requirements include one of the following; two years of occupational safety and health experience (with a broad focus) in any industry, a college degree in occupational safety and health or industrial hygiene from an accredited college or university, an Associate Safety Professional (ASP), Certified Safety Professional (CSP), Certified Industrial Hygienist (CIH), Certified Safety and Health Manager (CSHM) or Certified Marine Chemist (CMC) designation.
+	•	OSHA #5600 Disaster Site Worker Trainer Course– OSHA #500 Trainer Course in Occupational Safety and Health for the Construction Industry or OSHA #501 Trainer Course in Occupational Safety and Health for General Industry, three years of safety training experience, and completion of the 40- hour HAZWOPER course.
+	•	For Previously Authorized Trainers – If the student is a previously authorized Outreach Training Program trainer, a copy of the Outreach trainer card with an expiration date no more than ten (10) years old may be accepted. If the Outreach Training Program trainer card is not available, an official transcript from an OTI Education Center must be provided for the required prerequisite occupational safety and health standards course prior to registering for the Outreach Training Program trainer course.
+
+Appendix C - Use Case Diagram
+
+
+Appendix D - USF Prerequisite Form
+Here is the full text content extracted from the PDF, formatted for inclusion in an appendix.
+
+Page 1
+Submit completed forms to:
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+USF OSHA Training Institute Education Center
+2612 Cypress Ridge Blvd, Suite 101, Wesley Chapel, FL 33544 Email: usfotiec-cards@usf.edu
+(813) 974-2284
+OMB Control Number - 1218-0
+Expiration Date XXXX
+☐Approved:
+☐Declined:
+Approving Authority:
+It is the responsibility of the applicant to ensure all course prerequisites have been met prior to enrolling in the course.
+Please submit copies of this completed and signed form, and supporting documentation for prerequisite courses to the authorized OSHA Training Institute (OTI) Education Center listed above prior to enrolling in the course.
+Registration is not permitted without prior OTI Education Center approval.
+OSHA Trainer Course Prerequisites
+OSHA #500 Trainer Course in Occupational Safety and Health Standards for the Construction Industry - OSHA #510 Occupational Safety and Health Standards for the Construction Industry course completed within the last seven years and five years of construction safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience.
+OSHA #501 Trainer Course in Occupational Safety and Health Standards for General Industry - OSHA #511 Occupational Safety and Health Standards for General Industry course completed within the last seven years and five years of general industry safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience.
+OSHA #5400 Trainer Course in Occupational Safety and Health Standards for the Maritime Industry - OSHA #5410 Occupational Safety and Health Standards for the Maritime Industry Course completed within the last seven years and five years of maritime industry safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Marine Chemist (CMC), Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience.
+OSHA #5600 Disaster Site Worker Trainer Course - Current OSHA authorization as a Construction, Maritime or General Industry Outreach trainer, three years of safety training experience, and either completion of the 40-hour HAZWOPER course or possession of journey-level credentials in a building trade union.
+NOTE: Working safely does not meet the requirements of safety experience for any course.
+Applicant Information - Please type or print. (Read instructions on pages 6-8 before completing this form)
+	•	Applicant Legal Name:
+	•	Job Title:
+	•	Company:
+	•	Email:
+	•	Applicant Mailing Address: City: State: ZIP: Phone No.: ( ) Fax No.: ( )
+	•	Indicate course applying for: ☐ OSHA #500 ☐ OSHA #501 ☐ OSHA #5400 ☐ OSHA #5600 ☐ OSHA #502 ☐ OSHA #503 ☐ OSHA #5402 ☐ OSHA #5602 If applying for OSHA #502, #503, #5402, or #5602, attach a copy of your current OSHA Outreach Training Program trainer card or an official transcript of Outreach trainer course completion and skip to line 41.
+	•	Course Start Date: Course End Date:
+	•	Course Location (City/State):
+	•	I have completed the following prerequisite course(s). (Attach a copy of the course completion card or certificate for each applicable course):
+Construction
+☐ OSHA #510
+☐ OSHA #500
+☐ OSHA #502
+General Industry
+☐ OSHA #511
+☐ OSHA #501
+☐ OSHA #503
+Maritime
+☐ OSHA #5410
+☐ OSHA #5400
+☐ OSHA #5402
+Disaster Site Worker
+☐ OSHA #500, #501, or #5400
+☐ OSHA #5600
+☐ OSHA #5602
+OSHA 4-50.13
+Page 1 of 8
+
+Page 2
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+OMB Control Number - 1218-0
+Expiration Date XXXX
+List work experience with most recent employer first
+	•	Employer Name and Job Title:
+	•	Contact Person:
+	•	Contact Person's Phone Number:
+	•	Contact Person's Email Address:
+	•	Employer Address: Company: Address:
+	•	City: State: ZIP: Start Date of Employment (mm/dd/yyyy):
+	•	End Date of Employment (mm/dd/yyyy):
+	•	What percentage of this position is safety related?
+	•	Describe Safety Responsibilities and Activities in this Position:
+	•	Describe Overall Job Duties in this Position:
+Office Use Only Verified employment Length of experience in this job (years/months):
+OSHA 4-50.13
+Page 2 of 8
+
+Page 3
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+OMB Control Number - 1218-0
+Expiration Date XXXX
+List Work Experience with Next Most Recent Employer
+	•	Employer Name and Job Title:
+	•	Contact Person:
+	•	Contact Person's Phone Number:
+	•	Contact Person's Email Address:
+	•	Employer Address: Company: Address: City: State: ZIP:
+	•	Start Date of Employment (mm/dd/yyyy):
+	•	End Date of Employment (mm/dd/yyyy):
+	•	What percentage of this position is safety related?
+	•	Describe Safety Responsibilities and Activities in this position.
+	•	Describe Overall Job Duties in this Position:
+Office Use Only
+Length of experience in this job (years/months):
+Page 3 of 8
+OSHA 4-50.13
+
+Page 4
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+OMB Control Number - 1218-0
+Expiration Date XXXX
+Note: Multiple Copies of Page 4 may be included to ensure all applicable experience is listed.
+List Work Experience with Next Most Recent Employer
+	•	Employer Name and Job Title:
+	•	Contact Person:
+	•	Contact Person's Phone Number:
+	•	Contact Person's Email Address:
+	•	Employer Address: Company: Address: City: State: ZIP:
+	•	Start Date of Employment (mm/dd/yyyy):
+	•	End Date of Employment (mm/dd/yyyy):
+	•	What percentage of this position is safety related?
+	•	Describe Safety Responsibilities and Activities in this Position:
+	•	Describe Overall Job Duties in this Position:
+Office Use Only
+Length of experience in this job (years/months):
+Page 4 of 8
+OSHA 4-50.13
+
+Page 5
+OMB Control Number - 1218-0
+Expiration Date XXXX
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+40a. Complete this Section to Substitute Education or Professional Certification for Two (2) Years Work Experience
+COLLEGE DEGREE - PROOF REQUIRED
+☐ I have a degree in occupational safety and health from an accredited college or university
+Name of College or University from which degree was acquired
+Academic Major
+Degree Level
+Date of Graduation
+☐ Attach required copy of official transcripts.
+40b. PROFESSIONAL CERTIFICATION - PROOF REQUIRED
+☐ Certified Safety Professional (CSP)
+☐ Certified Industrial Hygienist (CIH)
+☐ Certified Marine Chemist (CMC) (Maritime applicants only)
+☐ Attach required copy of current professional certification as a CSP, CIH, CMC
+Name and address of Certifying Organization:
+	•	I have previously been subject to revocation, suspension, or probation by OSHA ☐ Yes ☐ No
+	•	If responded yes to #41, please attach all OSHA correspondence related to the investigation.
+43. Statement of Certification
+I certify that the information I have included herein and submitted to the OTI Education Center is true and accurate. I understand that I will be subject to immediate dismissal from the OSHA Outreach Training Program if information provided herein is not true and correct. I further understand that providing false information herein may subject me to civil and criminal penalties under Federal law, including 18 U.S.C. 1001 and section 17(g) of the Occupational Safety and Health Act, 29 U.S.C. 666 (g), which provides criminal penalties for making false statements or representations in any document filed pursuant to that Act.
+Applicant Signature:
+Date:
+OFFICE USE ONLY
+Check one:
+☐ Approved
+☐ Not Approved
+Approving Official Name:
+Approving Official Title:
+Approving Official Signature
+Date:
+If not approved, please indicate reason:
+☐ Applicant did not demonstrate completion of the prerequisite course within the previous seven years
+☐ Applicant did not demonstrate the required years of experience
+☐ Applicant did not include transcripts
+☐ Applicant did not submit proof of applicable certification or degree
+☐ Applicant did not sign form
+☐ Other (Please explain)
+OSHA 4-50.13
+Page 5 of 8
+
+Page 6
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+Privacy Act Statement and Paperwork Reduction Act Statement
+OMB Control Number - 1218-0
+Expiration Date XXXX
+Section 21 Training and Employer Education of the OSH Act, 29 USC 670 authorizes collection of this information. The purpose of this information is to determine whether the applicant meets the prerequisite requirements of training and experience to enroll in the Outreach Training Program trainer courses to become an authorized Outreach Training Program trainer. Completion of this form is required in order to enroll in Outreach Training Program trainer courses and to become an authorized Outreach Training Program trainer.
+According to the Paperwork Reduction Act of 1995, no persons are required to respond to a collection of information unless such collection displays a valid OMB control number. Public reporting burden for this collection of information is estimated to average one hour per response, including time for reviewing instructions, searching existing data sources, gathering and maintaining the data needed, and completing and reviewing the collection of information. Send comments regarding the burden estimate or any other aspect of this collection of information, including suggestions for reducing this burden, to the U.S. Department of Labor, Occupational Safety and Health Administration, Directorate of Standards and Guidance, 200 Constitution Avenue, NW, Room N3718, Washington, DC 20210 and reference the OMB Control Number.
+Note: Please do not return the completed OSHA Form 4-50.13 to this address.
+Instructions for OSHA Trainer Course Applicants
+It is the responsibility of the applicant to ensure all course prerequisites have been met prior to enrolling in the course. Submit copies of this completed and signed form and all necessary documentation for prerequisite courses to (Name & Contact info for approving OTI Education Center) prior to enrolling in the course. Ensure all safety work experience is shown and complete. Referring to a resume is not acceptable. Registration is not permitted without approval. Falsification of any items on this form may result in revocation of trainer authorization.
+OSHA Course Prerequisites
+OSHA #500 Trainer Course in Occupational Safety and Health Standards for the Construction Industry - OSHA #510 Occupational Safety and Health Standards for the Construction Industry course completed within the last seven years and five years of construction safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience. Applicant must provide official college transcript or proof of professional certification with proper documentation.
+OSHA #501 Trainer Course in Occupational Safety and Health Standards for General Industry - OSHA #511 Occupational Safety and Health Standards for General Industry course completed within the last seven years and five years of general industry safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two (2) years of experience. Applicant must provide official college transcript or proof of professional certification with proper documentation.
+OSHA #5400 Trainer Course in Occupational Safety and Health Standards for the Maritime Industry - OSHA #5410 Occupational Safety and Health Standards for the Maritime Industry Course completed within the last seven years and five years of maritime industry safety experience. A bachelor or higher college degree in occupational safety and health or industrial hygiene by an accredited college or university, a Certified Marine Chemist (CMC), Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation in the applicable training area may be substituted for two years of experience. Applicant must provide official college transcript or proof of professional certification with proper documentation.
+OSHA #5600 Disaster Site Worker Trainer Course - Current OSHA authorization as a Construction, Maritime, or General Industry Outreach trainer, three years of safety training experience, and either completion of the 40-hour HAZWOPER course or possession of journey-level credentials in a building trade union.
+Page 6 of 8
+OSHA 4-50.13
+
+Page 7
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+OMB Control Number - 1218-0
+Expiration Date XXXX
+Submit completed forms to: Address will be provided by the OTI Education Center and used to note approval or disapproval of applicant.
+Item 1 Applicant Name
+Provide full legal name.
+Item 2 Title
+Provide current job title. If currently not working, leave field blank.
+Item 3 Company
+Provide current employer. If currently not working, leave this field blank.
+Item 4 E-Mail
+Provide current e-mail address.
+Item 5 Applicant Mailing Address
+Provide current mailing address, phone and fax number.
+Item 6 Course
+Check the box indicating which course you are interested in attending.
+Item 7 Course Dates
+List dates during which you wish to take the course from the OTI Education Center's course schedule. If unsure, leave this field blank.
+Item 8 Course Location
+List the location of the specific course in which you would like to enroll. If unsure, leave this field blank.
+Item 9 Prerequisite Course
+Check the box which corresponds to the applicable prerequisite OSHA course(s) completed:
+	•	For the OSHA #500, the prerequisite course(s) are the OSHA #510, or a current OSHA #500 or OSHA #502.
+	•	For the OSHA #502, the prerequisite course(s) are a current OSHA #500 or OSHA #502.
+	•	For the OSHA #501, the prerequisite course(s) are the OSHA #511, or a current OSHA #501 or OSHA #503.
+	•	For the OSHA #503, the prerequisite course(s) are a current OSHA #501 or OSHA #503
+	•	For the OSHA #5400, the prerequisite course(s) are the OSHA #5410, or a current OSHA #5400 or OSHA #5402.
+	•	For the OSHA #5402, the prerequisite course(s) are the OSHA #5400 or OSHA #5402.
+	•	For the OSHA #5600, the prerequisite course(s) are the OSHA #5600, OSHA #500, OSHA #501, or OSHA #5400.
+	•	For the OSHA #5602, the prerequisite course(s) are the OSHA #5600 or OSHA #5602.
+Item 10 Employer Name and Job Title
+Provide job title and current employer name.
+Item 11 Contact Person
+Provide name of supervisor or Human Resources at this employer who can verify employment and role for this employee.
+Item 12 Contact Person's Phone Number
+Provide current contact phone number for person identified in Item 11.
+Item 13 Contact Person's Email Address
+Provide valid email address for person identified in Item 11.
+Item 14 Employer Address
+Provide current mailing address for employer.
+Item 15 Start Date of Employment
+Provide start date with this employer.
+Item 16 End Date of Employment
+Provide end date with this employer. If this is current employer, write "present".
+Item 17 What Percentage of this Position is Safety Related?
+Indicate the percentage of time devoted to safety-related tasks in this position.
+Item 18 Describe Safety Activities in this Position
+List safety-related tasks performed on the job, including the responsibility for the safety of others. Indicate the percentage of time devoted to each area listed below.
+Note: Related experience must be detailed since this document is a record of safety experience and will be
+Page 7 of 8
+OSHA 4-50.13
+
+Page 8
+OMB Control Number - 1218-0
+Expiration Date XXXX
+OSHA Training Institute Education Centers Program
+OSHA Trainer Course
+PREREQUISITE VERIFICATION FORM
+Read instructions on pages 6-8 before completing this form.
+used to determine whether eligibility requirements have been met.
+Item 19 Overall Job Duties in this Position
+Indicate duties performed in this position, focusing on those that are safety-related.
+Item 20-29 Second Employer
+If applicable, list the information as directed from the corresponding items 10-19 as applies to second most recent position.
+Item 30-39 Third Employer
+If applicable, list the information as directed from the corresponding items 10-19 as applies to next most recent position.
+Additional Employers
+Attach additional pages as needed, following the same format.
+Item 40a College Degree
+Complete this section only if substituting a bachelor or higher college degree for two (2) years of work experience. If applicable, place an "x" in the box indicating a college degree in safety or industrial hygiene from an accredited university, the name of the college or university from which degree was received date of graduation, and title of degree earned. Place an "x" in the box indicating transcripts are attached. The official college transcript must be provided for the degree to be considered as a substitute for work experience.
+Item 40b Professional Certification
+Complete this section only if substituting professional certification for two (2) years of work experience. If applicable, place an "x" in the box that corresponds to the professional certification currently held. Place an "x" in the box indicating a copy of the professional certification is attached. Provide the name and address of the certifying organization. A copy of the professional certification must be provided to be considered as a substitute for work experience.
+Item 41. Revocation, Suspension, or Probation
+Indicate if you have ever been subject to revocation, suspension, or probation by OSHA.
+Item 42. Investigation Correspondence
+If you have ever been subject to revocation, suspension, or probation by OSHA; you must provide all correspondence between you and OSHA related to the investigation.
+Item 43. Statement of Certification
+This statement must be signed by the applicant to certify that the information provided on the Prerequisite Verification Form is true and correct. Neglecting to sign the Statement of Certification will result in the application being declined.
+Page 8 of 8
+

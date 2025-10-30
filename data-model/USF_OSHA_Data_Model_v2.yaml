@@ -1,0 +1,1881 @@
+# === USF OSHA Prerequisites Application - Data Model ===
+# Generated: 2025-10-30
+# Source: USF_OSHA_Prereqs_Solution_10_28_2025.txt
+
+# === DATA MODEL SUMMARY ===
+summary:
+  primary_tables: 14  # (12 Required + 2 Suggested)
+  reference_tables: 6  # (6 Required + 0 Suggested)
+  junction_tables: 2  # (2 Required + 0 Suggested)
+  source_traceability: "100%"
+  notes: "Data model designed for Appian platform with synced records. All tables use surrogate INTEGER primary keys for record type compatibility."
+
+# === PRIMARY ENTITIES ===
+entities:
+  - name: "APPLICANT"
+    description: "Prospective course attendees who apply for OSHA trainer courses and whose prerequisites are reviewed"
+    source_quote: "Applicants: Prospective course attendees who apply for the courses and whose prerequisites are reviewed. (Key Actors, line 52)"
+    creation_trigger: "User self-registers via Appian Portal"
+    classification: "Required"
+    business_rules:
+      - "Applicants create accounts via self-registration Portal (line 45)"
+      - "All Applicant views available in both English and Spanish (line 48)"
+      - "Applicants can apply for 2 or more courses on single application (line 63)"
+    attributes:
+      - name: "applicant_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "legal_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Applicant Legal Name (Appendix D, line 253)"
+        description: "Full legal name of applicant (must match government-issued ID)"
+      - name: "email"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        unique: true
+        validation: "email_format"
+        searchable: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Email: (Appendix D, line 256)"
+        description: "Primary email address for all communications"
+      - name: "preferred_language"
+        type: "TEXT"
+        required: true
+        max_length: 2
+        allowed_values: ["en", "es"]
+        default_value: "en"
+        source: "Requirements"
+        source_quote: "All Applicant views will be available in both English and Spanish (line 48)"
+        description: "Preferred language for applicant interface (English or Spanish)"
+      - name: "appian_username"
+        type: "USERNAME"
+        required: true
+        unique: true
+        source: "Requirements"
+        source_quote: "Applicants will create an account on USF's Appian system via a self-registration Portal (line 45)"
+        description: "Reference to Appian user account"
+    relationships:
+      - type: "one-to-many"
+        entity: "APPLICATION"
+        foreign_key: "applicant_id"
+        source_quote: "Applicants will follow a wizard-like experience to provide information necessary to populate the OSHA Prerequisite Verification form (line 45)"
+        business_rule: "An applicant can submit multiple applications over time for different courses"
+        description: "One applicant can have many applications"
+
+  - name: "APPLICATION"
+    description: "A submission by an applicant to request enrollment in one or more OSHA trainer courses, including all prerequisite verification information"
+    source_quote: "The process whereby applicants submit an application form to request enrollment in a course (line 33)"
+    creation_trigger: "Applicant completes and submits application wizard"
+    classification: "Required"
+    business_rules:
+      - "Applications must be submitted at least 2 weeks before course start date (line 88)"
+      - "Applicants can apply for 2 or more courses on single application (line 63)"
+      - "Application may need to be re-signed if edited and re-submitted (line 72)"
+      - "Applications sent back for review are not closed automatically (line 85)"
+      - "Change tracking available across versions for reviewer comparison (line 85)"
+    attributes:
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_number"
+        type: "TEXT"
+        required: true
+        max_length: 50
+        unique: true
+        searchable: true
+        indexed: true
+        read_only: true
+        source: "Requirements"
+        source_quote: "Application case tracking required (line 85)"
+        description: "Human-readable unique application number for reference"
+      - name: "applicant_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICANT.applicant_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Applicants submit application form (line 33)"
+        description: "Foreign key to applicant who submitted this application"
+      - name: "application_status"
+        type: "TEXT"
+        required: true
+        max_length: 30
+        indexed: true
+        allowed_values: ["Draft", "Submitted", "Under Review", "Returned for Information", "Re-submitted", "Approved", "Denied", "Withdrawn"]
+        default_value: "Draft"
+        source: "Requirements"
+        source_quote: "Application status workflow: Approve/Return for Information/Deny (line 74-77)"
+        description: "Current status of application in review workflow"
+      - name: "job_title"
+        type: "TEXT"
+        required: true
+        max_length: 150
+        source: "Requirements"
+        source_quote: "Job Title: (Appendix D, line 254)"
+        description: "Current job title of applicant"
+      - name: "company_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        source: "Requirements"
+        source_quote: "Company: (Appendix D, line 255)"
+        description: "Current employer of applicant"
+      - name: "phone_number"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        validation: "phone_format"
+        source: "Requirements"
+        source_quote: "Phone No.: (Appendix D, line 257)"
+        description: "Primary contact phone number"
+      - name: "fax_number"
+        type: "TEXT"
+        required: false
+        max_length: 20
+        validation: "phone_format"
+        source: "Requirements"
+        source_quote: "Fax No.: (Appendix D, line 257)"
+        description: "Fax number if available"
+      - name: "mailing_address"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Applicant Mailing Address: (Appendix D, line 257)"
+        description: "Street address for mailing"
+      - name: "city"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        source: "Requirements"
+        source_quote: "City: (Appendix D, line 257)"
+        description: "City for mailing address"
+      - name: "state"
+        type: "TEXT"
+        required: true
+        max_length: 2
+        source: "Requirements"
+        source_quote: "State: (Appendix D, line 257)"
+        description: "State abbreviation for mailing address"
+      - name: "zip_code"
+        type: "TEXT"
+        required: true
+        max_length: 10
+        source: "Requirements"
+        source_quote: "ZIP: (Appendix D, line 257)"
+        description: "ZIP code for mailing address"
+      - name: "has_previous_revocation"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "I have previously been subject to revocation, suspension, or probation by OSHA (Appendix D, line 371)"
+        description: "Whether applicant has been subject to OSHA revocation/suspension"
+      - name: "submitted_date"
+        type: "DATETIME"
+        required: false
+        indexed: true
+        source: "Requirements"
+        source_quote: "Once submitted, application routed to approver for review (line 73)"
+        description: "Timestamp when application was submitted"
+      - name: "approval_date"
+        type: "DATETIME"
+        required: false
+        source: "Requirements"
+        source_quote: "Approve: Finalizes application and notifies student (line 75)"
+        description: "Timestamp when application was approved"
+      - name: "denial_date"
+        type: "DATETIME"
+        required: false
+        source: "Requirements"
+        source_quote: "Deny: Hard denial for definitively ineligible applicants (line 77)"
+        description: "Timestamp when application was denied"
+      - name: "denial_reason"
+        type: "TEXT"
+        required: false
+        max_length: 1000
+        source: "Requirements"
+        source_quote: "If not approved, please indicate reason (Appendix D, line 385)"
+        description: "Detailed reason for denial if applicable"
+      - name: "approved_by_user"
+        type: "USERNAME"
+        required: false
+        source: "Requirements"
+        source_quote: "Approving Authority (Appendix D, line 242)"
+        description: "Approver who made final approval decision"
+      - name: "denied_by_user"
+        type: "USERNAME"
+        required: false
+        source: "Requirements"
+        source_quote: "Approver review process (line 73)"
+        description: "Approver who made denial decision"
+      - name: "assigned_reviewer"
+        type: "USERNAME"
+        required: false
+        indexed: true
+        source: "Requirements"
+        source_quote: "Approvers review applications (line 51)"
+        description: "Currently assigned reviewer for this application"
+      - name: "docusign_envelope_id"
+        type: "TEXT"
+        required: false
+        max_length: 100
+        source: "Requirements"
+        source_quote: "Digitally sign application using DocuSign (line 72)"
+        description: "DocuSign envelope ID for signed application PDFs"
+      - name: "watch_list_verification_status"
+        type: "TEXT"
+        required: false
+        max_length: 30
+        allowed_values: ["Not Checked", "Clear", "Found - Resolved", "Found - Unresolved"]
+        source: "Requirements"
+        source_quote: "Reviewer checks against public and internal watch lists (line 78)"
+        description: "Status of watch list verification"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICANT"
+        foreign_key: "applicant_id"
+        source_quote: "Applicants submit applications (line 33)"
+        business_rule: "Each application belongs to exactly one applicant"
+        description: "Application submitted by an applicant"
+      - type: "one-to-many"
+        entity: "APPLICATION_COURSE"
+        foreign_key: "application_id"
+        source_quote: "Applicants can apply for 2 or more courses on single application (line 63)"
+        business_rule: "Application can include multiple courses requiring individual prerequisite validation"
+        description: "Application can be for multiple courses"
+      - type: "one-to-many"
+        entity: "WORK_EXPERIENCE"
+        foreign_key: "application_id"
+        source_quote: "List work experience with most recent employer first (line 288)"
+        business_rule: "Applicants list multiple employers to demonstrate required years of experience"
+        description: "Application includes multiple work experience entries"
+      - type: "one-to-many"
+        entity: "APPLICATION_COMMENT"
+        foreign_key: "application_id"
+        source_quote: "Return for Information: sends application back with comments (line 76)"
+        business_rule: "Track all communication between approver and applicant"
+        description: "Application can have multiple comments throughout review process"
+
+  - name: "COURSE"
+    description: "OSHA trainer courses offered by USF OSHA Training Institute Education Center, sourced from Enrole/Informer system"
+    source_quote: "Courses (Course data will be imported from Enrole/Informer) (line 148)"
+    creation_trigger: "Monthly import from Enrole/Informer system"
+    classification: "Required"
+    business_rules:
+      - "Course data imported from Enrole/Informer monthly (line 148)"
+      - "Approximately 12 future months of course data imported (line 93)"
+      - "Course start date mandatory for all applications (line 89)"
+      - "Contract courses require registration code validation (line 62)"
+    attributes:
+      - name: "course_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "course_number"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        unique: false
+        searchable: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Indicate course applying for: OSHA #500, #501, #5400, #5600, etc. (Appendix D, line 258)"
+        description: "OSHA course number (e.g., #500, #501, #5400, #5600)"
+      - name: "course_name"
+        type: "TEXT"
+        required: true
+        max_length: 300
+        searchable: true
+        source: "Requirements"
+        source_quote: "Course naming per OSHA standards (Appendix B, line 217)"
+        description: "Full descriptive name of course"
+      - name: "start_date"
+        type: "DATE"
+        required: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Course start date is mandatory in all cases (line 89)"
+        description: "Course start date"
+      - name: "end_date"
+        type: "DATE"
+        required: true
+        source: "Requirements"
+        source_quote: "Course Start Date: Course End Date: (Appendix D, line 259)"
+        description: "Course end date"
+      - name: "location"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        source: "Requirements"
+        source_quote: "Course Location (City/State): (Appendix D, line 260)"
+        description: "City and state where course is held"
+      - name: "instructor_name"
+        type: "TEXT"
+        required: false
+        max_length: 150
+        source: "Requirements"
+        source_quote: "Course instructors supported by facilitators (line 53)"
+        description: "Name of course instructor"
+      - name: "is_contract"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Contract courses are private offerings for specific institutions (line 62)"
+        description: "Whether this is a contract course requiring registration code"
+      - name: "registration_code_required"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "Applicants for contract courses must provide registration code (line 62)"
+        description: "Whether registration code is required for this course"
+      - name: "max_capacity"
+        type: "INTEGER"
+        required: false
+        min_value: 1
+        source: "Requirements"
+        source_quote: "Course enrollment data from Enrole (line 31)"
+        description: "Maximum number of students for this course"
+      - name: "current_enrollment"
+        type: "INTEGER"
+        required: false
+        default_value: "0"
+        min_value: 0
+        calculated: true
+        source: "Requirements"
+        source_quote: "Course enrollment tracking needed (line 31)"
+        description: "Current number of enrolled students"
+      - name: "course_type"
+        type: "TEXT"
+        required: true
+        max_length: 30
+        allowed_values: ["Trainer Course", "Update Course", "Disaster Site Worker"]
+        source: "Requirements"
+        source_quote: "Different course types have different prerequisites (Appendix B)"
+        description: "Type classification of course"
+      - name: "is_visible"
+        type: "BOOLEAN"
+        required: true
+        default_value: "true"
+        source: "Requirements"
+        source_quote: "All future courses visible to applicants (line 62)"
+        description: "Whether course is visible to applicants for application"
+      - name: "enrole_course_id"
+        type: "TEXT"
+        required: false
+        max_length: 50
+        unique: true
+        source: "Requirements"
+        source_quote: "Course data sourced from Enrole (line 106)"
+        description: "External ID from Enrole system for data sync"
+    relationships:
+      - type: "one-to-many"
+        entity: "APPLICATION_COURSE"
+        foreign_key: "course_id"
+        source_quote: "Applicants select courses from available courses (line 60)"
+        business_rule: "One course can have many applications"
+        description: "Course can be selected in many applications"
+      - type: "one-to-many"
+        entity: "COURSE_REGISTRATION_CODE"
+        foreign_key: "course_id"
+        source_quote: "Registration codes imported into Appian via course data (line 62)"
+        business_rule: "Contract courses have multiple valid registration codes"
+        description: "Contract course has multiple valid registration codes"
+
+  - name: "APPLICATION_COURSE"
+    description: "Junction table linking applications to specific courses, allowing individual prerequisite validation per course within a multi-course application"
+    source_quote: "For any application, applicant can request multiple courses. For organizational purposes, grouped by application, but each application course separated for individual prerequisite validation (line 150)"
+    creation_trigger: "Created when applicant selects courses in application wizard"
+    classification: "Required"
+    business_rules:
+      - "Each application course requires individual prerequisite validation (line 81)"
+      - "Separate signed PDF generated for each course (line 72)"
+      - "Individual, signed PDFs required for each course applicant applied for (line 184)"
+    attributes:
+      - name: "application_course_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Surrogate key for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Grouped by applicant's application (line 150)"
+        description: "Foreign key to application"
+      - name: "course_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "COURSE.course_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Applicant can request multiple courses (line 150)"
+        description: "Foreign key to course being applied for"
+      - name: "registration_code_entered"
+        type: "TEXT"
+        required: false
+        max_length: 50
+        source: "Requirements"
+        source_quote: "Cannot process applications for contracted courses without correct registration code (line 70)"
+        description: "Registration code entered by applicant if contract course"
+      - name: "registration_code_valid"
+        type: "BOOLEAN"
+        required: false
+        source: "Requirements"
+        source_quote: "System will validate registration code (line 62)"
+        description: "Whether entered registration code was validated as correct"
+      - name: "prerequisite_validation_status"
+        type: "TEXT"
+        required: false
+        max_length: 30
+        allowed_values: ["Not Started", "In Progress", "Complete", "Insufficient"]
+        source: "Requirements"
+        source_quote: "Prerequisite verification must be performed for each course (line 81)"
+        description: "Status of prerequisite validation for this specific course"
+      - name: "signed_pdf_document_id"
+        type: "DOCUMENT"
+        required: false
+        source: "Requirements"
+        source_quote: "Individual signed PDFs for each course applicant applied for (line 184)"
+        description: "Signed OSHA Prerequisite Verification PDF for this specific course"
+    unique_constraints:
+      - fields: ["application_id", "course_id"]
+        description: "Prevent duplicate course selections in same application"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Grouped by application (line 150)"
+        business_rule: "Each application-course link belongs to one application"
+        description: "Links to parent application"
+      - type: "many-to-one"
+        entity: "COURSE"
+        foreign_key: "course_id"
+        source_quote: "Applicant requests multiple courses (line 150)"
+        business_rule: "Each application-course link references one course"
+        description: "Links to specific course"
+
+  - name: "WORK_EXPERIENCE"
+    description: "Employment history entries demonstrating safety-related work experience required for OSHA trainer course prerequisites"
+    source_quote: "List work experience with most recent employer first (Appendix D, line 288)"
+    creation_trigger: "Applicant completes work experience section of application wizard"
+    classification: "Required"
+    business_rules:
+      - "All fields required for prior employer section (line 65)"
+      - "3-5 years of safety experience required depending on course (line 217-220)"
+      - "35% cutoff for safety-related tasks (not transparent to users) (line 87)"
+      - "Hours per week on safety tasks must be tracked (line 68)"
+    attributes:
+      - name: "work_experience_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "List work experience as part of application (line 288)"
+        description: "Foreign key to parent application"
+      - name: "employer_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        source: "Requirements"
+        source_quote: "Employer Name and Job Title: (Appendix D, line 289)"
+        description: "Name of employer organization"
+      - name: "job_title"
+        type: "TEXT"
+        required: true
+        max_length: 150
+        source: "Requirements"
+        source_quote: "Employer Name and Job Title: (Appendix D, line 289)"
+        description: "Job title held at this employer"
+      - name: "contact_person_name"
+        type: "TEXT"
+        required: true
+        max_length: 150
+        source: "Requirements"
+        source_quote: "Contact Person: (Appendix D, line 290)"
+        description: "Name of supervisor or HR contact who can verify employment"
+      - name: "contact_person_phone"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        validation: "phone_format"
+        source: "Requirements"
+        source_quote: "Contact Person's Phone Number: (Appendix D, line 291)"
+        description: "Phone number of contact person"
+      - name: "contact_person_email"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        validation: "email_format"
+        source: "Requirements"
+        source_quote: "Contact Person's Email Address: (Appendix D, line 292)"
+        description: "Email address of contact person"
+      - name: "company_address_line1"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Employer Address: Company: Address: (Appendix D, line 293)"
+        description: "Company street address line 1"
+      - name: "company_address_line2"
+        type: "TEXT"
+        required: false
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Employer Address: (Appendix D, line 293)"
+        description: "Company street address line 2"
+      - name: "company_city"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        source: "Requirements"
+        source_quote: "City: (Appendix D, line 294)"
+        description: "City of employer"
+      - name: "company_state"
+        type: "TEXT"
+        required: true
+        max_length: 2
+        source: "Requirements"
+        source_quote: "State: (Appendix D, line 294)"
+        description: "State abbreviation of employer"
+      - name: "company_zip"
+        type: "TEXT"
+        required: true
+        max_length: 10
+        source: "Requirements"
+        source_quote: "ZIP: (Appendix D, line 294)"
+        description: "ZIP code of employer"
+      - name: "start_date"
+        type: "DATE"
+        required: true
+        source: "Requirements"
+        source_quote: "Start Date of Employment (mm/dd/yyyy): (Appendix D, line 294)"
+        description: "Employment start date"
+      - name: "end_date"
+        type: "DATE"
+        required: false
+        source: "Requirements"
+        source_quote: "End Date of Employment (mm/dd/yyyy): (Appendix D, line 295)"
+        description: "Employment end date (null if current employer)"
+      - name: "is_current_employer"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "If current employer, write 'present' (Appendix D instructions, line 463)"
+        description: "Whether this is applicant's current employer"
+      - name: "percent_safety_related"
+        type: "DECIMAL"
+        required: true
+        min_value: 0
+        max_value: 100
+        source: "Requirements"
+        source_quote: "What percentage of this position is safety related? (Appendix D, line 296)"
+        description: "Percentage of job duties that are safety-related (0-100)"
+      - name: "hours_per_week_safety"
+        type: "DECIMAL"
+        required: true
+        min_value: 0
+        source: "Requirements"
+        source_quote: "Provide field for hours per week devoted to safety-related tasks (line 68)"
+        description: "Hours per week spent on safety-related tasks"
+      - name: "hours_per_week_total"
+        type: "DECIMAL"
+        required: true
+        min_value: 1
+        max_value: 168
+        source: "Requirements"
+        source_quote: "Provide field for hours worked per week (line 68)"
+        description: "Total hours worked per week"
+      - name: "safety_responsibilities"
+        type: "TEXT"
+        required: true
+        max_length: 2000
+        source: "Requirements"
+        source_quote: "Describe Safety Responsibilities and Activities in this Position: (Appendix D, line 297)"
+        description: "Detailed description of safety-related duties and responsibilities"
+      - name: "overall_job_duties"
+        type: "TEXT"
+        required: true
+        max_length: 2000
+        source: "Requirements"
+        source_quote: "Describe Overall Job Duties in this Position: (Appendix D, line 298)"
+        description: "Description of all job duties including safety-related"
+      - name: "years_of_experience"
+        type: "DECIMAL"
+        required: false
+        calculated: true
+        source: "Requirements"
+        source_quote: "Length of experience in this job (years/months): (Appendix D, line 299)"
+        description: "Calculated years of experience at this employer"
+      - name: "qualifying_years"
+        type: "DECIMAL"
+        required: false
+        calculated: true
+        source: "Requirements"
+        source_quote: "Years of experience weighted by percentage safety-related for qualification calculation"
+        description: "Qualifying years calculated from total years × percent safety-related"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Work experience listed as part of application (line 288)"
+        business_rule: "Each work experience entry belongs to one application"
+        description: "Work experience is part of an application"
+
+  - name: "EDUCATION"
+    description: "Bachelor or higher degree in occupational safety/industrial hygiene that can substitute for 2 years of required work experience"
+    source_quote: "A college degree in occupational safety and health or industrial hygiene may be substituted for two years of experience (line 217)"
+    creation_trigger: "Applicant completes education section of application wizard claiming degree substitution"
+    classification: "Required"
+    business_rules:
+      - "Bachelor or higher degree can substitute for 2 years of experience (line 217)"
+      - "Degree must be in occupational safety and health OR industrial hygiene (line 217)"
+      - "Must be from accredited college or university (line 217)"
+      - "Official transcripts required as proof (line 364)"
+      - "Maximum 2 years of experience can be substituted (line 67)"
+    attributes:
+      - name: "education_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        unique: true
+        source: "Requirements"
+        source_quote: "Education claimed as part of application (Appendix D, line 358)"
+        description: "Foreign key to parent application (one-to-one relationship)"
+      - name: "has_degree"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "I have a degree in occupational safety and health (Appendix D, line 359)"
+        description: "Whether applicant claims qualifying degree"
+      - name: "institution_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        source: "Requirements"
+        source_quote: "Name of College or University from which degree was acquired (Appendix D, line 360)"
+        description: "Name of college or university"
+      - name: "degree_major"
+        type: "TEXT"
+        required: true
+        max_length: 150
+        source: "Requirements"
+        source_quote: "Academic Major (Appendix D, line 361)"
+        description: "Major field of study (must be occupational safety/industrial hygiene)"
+      - name: "degree_level"
+        type: "TEXT"
+        required: true
+        max_length: 50
+        allowed_values: ["Bachelor's", "Master's", "Doctorate"]
+        source: "Requirements"
+        source_quote: "Degree Level (Appendix D, line 362)"
+        description: "Level of degree obtained"
+      - name: "graduation_date"
+        type: "DATE"
+        required: true
+        source: "Requirements"
+        source_quote: "Date of Graduation (Appendix D, line 363)"
+        description: "Date degree was awarded"
+      - name: "transcript_document_id"
+        type: "DOCUMENT"
+        required: true
+        source: "Requirements"
+        source_quote: "Attach required copy of official transcripts (Appendix D, line 364)"
+        description: "Official transcript document showing degree and seal/signature"
+    relationships:
+      - type: "one-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Complete this section to substitute education for 2 years work experience (line 357)"
+        business_rule: "Each application can have at most one education record for substitution"
+        description: "Education record belongs to one application"
+
+  - name: "CERTIFICATION"
+    description: "Professional certifications (CSP, CIH, CMC, CHMM) that can substitute for 2 years of required work experience"
+    source_quote: "Certified Safety Professional (CSP) or Certified Industrial Hygienist (CIH) designation may be substituted for two years of experience (line 217)"
+    creation_trigger: "Applicant completes certification section claiming professional certification substitution"
+    classification: "Required"
+    business_rules:
+      - "CSP, CIH, or CMC designation can substitute for 2 years experience (line 217)"
+      - "Credentials must not expire before course start date (line 91)"
+      - "Certification verification required: CSP, CIH, CMC, CHMM (line 131)"
+      - "Proof of current certification required (line 369)"
+      - "Maximum 2 years of experience can be substituted (line 67)"
+    attributes:
+      - name: "certification_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Certification claimed as part of application (Appendix D, line 365)"
+        description: "Foreign key to parent application"
+      - name: "certification_type"
+        type: "TEXT"
+        required: true
+        max_length: 10
+        allowed_values: ["CSP", "CIH", "CMC", "CHMM"]
+        source: "Requirements"
+        source_quote: "Certified Safety Professional (CSP), Certified Industrial Hygienist (CIH), Certified Marine Chemist (CMC) (Appendix D, line 366-368); CHMM (line 131)"
+        description: "Type of professional certification"
+      - name: "certifying_organization"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Name and address of Certifying Organization: (Appendix D, line 370)"
+        description: "Name of organization that issued certification"
+      - name: "organization_address"
+        type: "TEXT"
+        required: true
+        max_length: 300
+        source: "Requirements"
+        source_quote: "Name and address of Certifying Organization: (Appendix D, line 370)"
+        description: "Full address of certifying organization"
+      - name: "certification_number"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        source: "Requirements"
+        source_quote: "Certification number needed for external verification (line 116)"
+        description: "Unique certification number for verification"
+      - name: "issue_date"
+        type: "DATE"
+        required: true
+        source: "Requirements"
+        source_quote: "Date certification was issued"
+        description: "Date certification was originally issued"
+      - name: "expiration_date"
+        type: "DATE"
+        required: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Credentials must not expire before course start date (line 91)"
+        description: "Date certification expires"
+      - name: "certification_document_id"
+        type: "DOCUMENT"
+        required: true
+        source: "Requirements"
+        source_quote: "Attach required copy of current professional certification (Appendix D, line 369)"
+        description: "Current certification card or certificate document"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Professional certification as part of application (line 365)"
+        business_rule: "Application can have multiple professional certifications"
+        description: "Certification belongs to one application"
+
+  - name: "PREREQUISITE_COURSE"
+    description: "Completion records of required OSHA prerequisite courses (e.g., #510, #511, #5410) that must be completed within 7 years"
+    source_quote: "I have completed the following prerequisite course(s). Attach a copy of course completion card or certificate (Appendix D, line 261)"
+    creation_trigger: "Applicant documents prerequisite course completion in application wizard"
+    classification: "Required"
+    business_rules:
+      - "Prerequisite courses must be completed within last 7 years (line 92)"
+      - "OSHA #510, #511, #5410 only valid for seven years (line 92)"
+      - "For update courses: current trainer card within 10 years OR official transcript (line 221)"
+      - "Certificate must show OTI center information (line 80)"
+      - "Non-USF certificates may require phone/email verification (line 130)"
+    attributes:
+      - name: "prerequisite_course_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Prerequisite courses documented as part of application (line 261)"
+        description: "Foreign key to parent application"
+      - name: "prerequisite_course_number"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        source: "Requirements"
+        source_quote: "Check box for applicable prerequisite OSHA courses (Appendix D, line 261-277)"
+        description: "Course number of prerequisite (e.g., #510, #511, #5410)"
+      - name: "completion_date"
+        type: "DATE"
+        required: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Completion date must be within 7 year window (line 92)"
+        description: "Date prerequisite course was completed"
+      - name: "issuing_oti_center"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Certificate must be from authorized OTI Education Center (line 80)"
+        description: "Name of OTI Education Center that issued certificate"
+      - name: "certificate_number"
+        type: "TEXT"
+        required: false
+        max_length: 100
+        source: "Requirements"
+        source_quote: "Certificate or card number for verification"
+        description: "Number on completion certificate or card"
+      - name: "certificate_document_id"
+        type: "DOCUMENT"
+        required: true
+        source: "Requirements"
+        source_quote: "Attach copy of course completion card or certificate for each applicable course (line 261)"
+        description: "Uploaded certificate or card showing course completion"
+      - name: "is_expired"
+        type: "BOOLEAN"
+        required: false
+        calculated: true
+        source: "Requirements"
+        source_quote: "System must validate completion date within 7-year window (line 92)"
+        description: "Calculated: whether completion date is more than 7 years ago"
+      - name: "is_verified"
+        type: "BOOLEAN"
+        required: false
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "Non-USF certificates may require verification (line 130)"
+        description: "Whether certificate has been verified with issuing center"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Prerequisite courses part of application (line 261)"
+        business_rule: "Each application may have multiple prerequisite course completions"
+        description: "Prerequisite course completion belongs to one application"
+
+  - name: "SUPPORTING_DOCUMENT"
+    description: "Documents uploaded by applicants or approvers as evidence to support application, including attachments, emails, and other audit documentation"
+    source_quote: "Supporting Documents (important for audit purposes; examples may include copies of email communications with applicants) (line 151)"
+    creation_trigger: "Documents uploaded during application submission or review process"
+    classification: "Required"
+    business_rules:
+      - "Supporting documents must be stored for auditing purposes (line 151)"
+      - "Documents like attachments or emails must be stored (line 184)"
+      - "All Applicant views will handle document management via Appian (line 47)"
+    attributes:
+      - name: "supporting_document_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Supporting documents associated with applications (line 151)"
+        description: "Foreign key to parent application"
+      - name: "document_type"
+        type: "TEXT"
+        required: true
+        max_length: 50
+        indexed: true
+        allowed_values: ["OSHA Correspondence", "Reinstatement Letter", "HAZWOPER Certificate", "Union Credentials", "Trainer Card", "Email Communication", "Other Supporting Document"]
+        source: "Requirements"
+        source_quote: "Various document types mentioned: OSHA correspondence (line 372), reinstatement letters (line 79), email communications (line 151)"
+        description: "Type/category of supporting document"
+      - name: "document_id"
+        type: "DOCUMENT"
+        required: true
+        source: "Requirements"
+        source_quote: "Supporting documentation uploaded by applicants (line 151)"
+        description: "Reference to uploaded document in Appian"
+      - name: "upload_date"
+        type: "DATETIME"
+        required: true
+        default_value: "CURRENT_TIMESTAMP"
+        source: "Requirements"
+        source_quote: "Audit trail for document uploads"
+        description: "Timestamp when document was uploaded"
+      - name: "uploaded_by_user"
+        type: "USERNAME"
+        required: true
+        source: "Requirements"
+        source_quote: "Track who uploaded document for audit purposes (line 184)"
+        description: "User who uploaded this document (applicant or reviewer)"
+      - name: "document_description"
+        type: "TEXT"
+        required: false
+        max_length: 500
+        source: "Requirements"
+        source_quote: "Description of document for identification"
+        description: "Optional description of document contents"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Supporting documents attached to applications (line 151)"
+        business_rule: "Each document belongs to one application"
+        description: "Document supports one application"
+
+  - name: "APPLICATION_COMMENT"
+    description: "Comments and communications between reviewers and applicants throughout the application review process"
+    source_quote: "Return for Information: sends application back to applicant with comments if information is missing or unclear (line 76)"
+    creation_trigger: "Reviewer adds comment when returning application or applicant responds to reviewer requests"
+    classification: "Required"
+    business_rules:
+      - "Comments required when returning application for information (line 76)"
+      - "Resubmissions tracked on same application case (line 85)"
+      - "Change tracking across versions for reviewer comparison (line 85)"
+    attributes:
+      - name: "comment_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Comments attached to application for communication (line 76)"
+        description: "Foreign key to application this comment belongs to"
+      - name: "comment_text"
+        type: "TEXT"
+        required: true
+        max_length: 4000
+        source: "Requirements"
+        source_quote: "Comments sent when returning application (line 76)"
+        description: "Full text of comment or communication"
+      - name: "comment_type"
+        type: "TEXT"
+        required: true
+        max_length: 30
+        allowed_values: ["Reviewer to Applicant", "Applicant Response", "Internal Reviewer Note"]
+        source: "Requirements"
+        source_quote: "Communication between reviewer and applicant (line 76)"
+        description: "Type of comment to determine visibility"
+      - name: "comment_date"
+        type: "DATETIME"
+        required: true
+        default_value: "CURRENT_TIMESTAMP"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Timeline of communications for audit"
+        description: "Timestamp when comment was created"
+      - name: "created_by_user"
+        type: "USERNAME"
+        required: true
+        source: "Requirements"
+        source_quote: "Track who made comment (reviewer or applicant)"
+        description: "User who created this comment"
+      - name: "is_visible_to_applicant"
+        type: "BOOLEAN"
+        required: true
+        default_value: "true"
+        source: "Requirements"
+        source_quote: "Some comments internal to reviewers, some sent to applicants"
+        description: "Whether comment should be visible to applicant"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Comments track communication for an application (line 76)"
+        business_rule: "Each comment belongs to one application"
+        description: "Comment is part of application communication history"
+
+  - name: "WATCH_LIST"
+    description: "Internal OTI Education Centers watch list of problematic applicants shared among OTI centers, imported monthly via spreadsheet"
+    source_quote: "The OTI Education Centers Watch List: A manually created and shared spreadsheet among all OTI centers listing problematic applicants (line 129)"
+    creation_trigger: "Monthly import of watch list spreadsheet by administrator"
+    classification: "Required"
+    business_rules:
+      - "Watch list imported monthly by administrators (line 83)"
+      - "Email reminders sent monthly to upload current version (line 78)"
+      - "Administrators can update via spreadsheet import or manual entry (line 83)"
+      - "Applicants on watch list can only be approved with reinstatement letter (line 79)"
+    attributes:
+      - name: "watch_list_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "person_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        searchable: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Watch list contains names of problematic applicants (line 129)"
+        description: "Full name of person on watch list"
+      - name: "email"
+        type: "TEXT"
+        required: false
+        max_length: 100
+        searchable: true
+        indexed: true
+        validation: "email_format"
+        source: "Requirements"
+        source_quote: "Email used to identify applicants in watch list check"
+        description: "Email address of person on watch list if available"
+      - name: "organization"
+        type: "TEXT"
+        required: false
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Watch list may include organizational affiliation"
+        description: "Organization or company associated with person"
+      - name: "reason"
+        type: "TEXT"
+        required: true
+        max_length: 1000
+        source: "Requirements"
+        source_quote: "Reason for being on watch list"
+        description: "Reason why person is on watch list"
+      - name: "date_added"
+        type: "DATE"
+        required: true
+        indexed: true
+        source: "Requirements"
+        source_quote: "Track when person was added to watch list"
+        description: "Date person was added to watch list"
+      - name: "added_by_center"
+        type: "TEXT"
+        required: false
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Watch list shared among OTI centers (line 129)"
+        description: "Which OTI Education Center added this entry"
+      - name: "reinstated"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Track if person has been reinstated (line 79)"
+        description: "Whether person has been officially reinstated"
+      - name: "reinstatement_date"
+        type: "DATE"
+        required: false
+        source: "Requirements"
+        source_quote: "Date of reinstatement if applicable"
+        description: "Date person was reinstated if applicable"
+      - name: "notes"
+        type: "TEXT"
+        required: false
+        max_length: 2000
+        source: "Requirements"
+        source_quote: "Additional notes about watch list entry"
+        description: "Additional context or notes about this entry"
+      - name: "last_updated_date"
+        type: "DATE"
+        required: true
+        source: "Requirements"
+        source_quote: "Monthly watch list updates (line 83)"
+        description: "Date this entry was last updated in monthly import"
+
+  - name: "COURSE_REGISTRATION_CODE"
+    description: "Valid registration codes for contract courses, imported with course data, required for enrollment in private institutional courses"
+    source_quote: "Contract courses require registration code from employer, which system will validate. Registration codes imported into Appian via course data (line 62)"
+    creation_trigger: "Imported monthly with course data from Enrole/Informer"
+    classification: "Required"
+    business_rules:
+      - "Contract courses are private offerings for specific institutions (line 62)"
+      - "Only employees of specific institutions can enroll (line 62)"
+      - "Registration code required and validated by system (line 62)"
+      - "Cannot process applications without correct registration code (line 70)"
+    attributes:
+      - name: "registration_code_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "course_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "COURSE.course_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Registration codes associated with specific contract courses (line 62)"
+        description: "Foreign key to contract course"
+      - name: "registration_code"
+        type: "TEXT"
+        required: true
+        max_length: 50
+        unique: false
+        indexed: true
+        source: "Requirements"
+        source_quote: "Applicants provide registration code from employer (line 62)"
+        description: "The actual registration code value"
+      - name: "institution_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Contract courses for specific institutions (line 62)"
+        description: "Name of institution this code is valid for"
+      - name: "valid_from_date"
+        type: "DATE"
+        required: false
+        source: "Requirements"
+        source_quote: "Registration code validity period"
+        description: "Date from which code becomes valid"
+      - name: "valid_to_date"
+        type: "DATE"
+        required: false
+        source: "Requirements"
+        source_quote: "Registration code expiration"
+        description: "Date after which code is no longer valid"
+      - name: "is_active"
+        type: "BOOLEAN"
+        required: true
+        default_value: "true"
+        source: "Requirements"
+        source_quote: "Active status for registration codes"
+        description: "Whether code is currently active and can be used"
+      - name: "max_uses"
+        type: "INTEGER"
+        required: false
+        min_value: 1
+        source: "Requirements"
+        source_quote: "May limit number of times code can be used"
+        description: "Maximum number of times this code can be used"
+      - name: "current_uses"
+        type: "INTEGER"
+        required: false
+        default_value: "0"
+        min_value: 0
+        source: "Requirements"
+        source_quote: "Track usage of registration codes"
+        description: "Number of times this code has been used"
+    unique_constraints:
+      - fields: ["course_id", "registration_code"]
+        description: "Prevent duplicate codes for same course"
+    relationships:
+      - type: "many-to-one"
+        entity: "COURSE"
+        foreign_key: "course_id"
+        source_quote: "Registration codes associated with contract courses (line 62)"
+        business_rule: "Each code belongs to one course, courses can have multiple codes"
+        description: "Registration code is for a specific contract course"
+
+  # === SUGGESTED ENHANCEMENTS ===
+
+  - name: "APPLICATION_STATUS_HISTORY"
+    description: "SUGGESTED: Audit trail of all status changes for applications, providing timeline tracking and change history for compliance and review comparison"
+    source_quote: "Reviewers would like ability to compare details across application versions. Change tracking shall be available across versions (line 185)"
+    creation_trigger: "Automatically created whenever APPLICATION.application_status changes"
+    classification: "Suggested"
+    problem_addressed: "Requirements mention need for change tracking and version comparison (line 185) but don't specify how to implement. This table provides audit trail for status transitions."
+    impact: "Enables compliance with auditability requirements and supports reviewer need to see what changed when application was returned and resubmitted"
+    priority: "High"
+    business_rules:
+      - "Automatically track every status change with timestamp and user"
+      - "Support reviewer comparison of application versions"
+      - "Provide audit trail for compliance"
+    attributes:
+      - name: "status_history_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Suggested"
+        description: "Foreign key to application"
+      - name: "previous_status"
+        type: "TEXT"
+        required: false
+        max_length: 30
+        source: "Suggested"
+        description: "Status before this change (null for initial status)"
+      - name: "new_status"
+        type: "TEXT"
+        required: true
+        max_length: 30
+        source: "Suggested"
+        description: "Status after this change"
+      - name: "status_change_date"
+        type: "DATETIME"
+        required: true
+        indexed: true
+        default_value: "CURRENT_TIMESTAMP"
+        source: "Suggested"
+        description: "Timestamp when status changed"
+      - name: "changed_by_user"
+        type: "USERNAME"
+        required: true
+        source: "Suggested"
+        description: "User who triggered status change"
+      - name: "change_reason"
+        type: "TEXT"
+        required: false
+        max_length: 1000
+        source: "Suggested"
+        description: "Optional reason for status change (e.g., comment when returning)"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Change tracking for application versions (line 185)"
+        business_rule: "Each history record belongs to one application"
+        description: "Status history entry tracks changes to one application"
+
+  - name: "VERIFICATION_LOG"
+    description: "SUGGESTED: Audit log of watch list and credential verification activities performed by reviewers, ensuring compliance with verification requirements"
+    source_quote: "Reviewer checks claimed certifications and prerequisite courses in external websites (line 80). Verifying transcripts is visual verification (line 80). Must check against public and internal watch lists (line 78)."
+    creation_trigger: "Created when reviewer performs verification check (watch list, certification, transcript)"
+    classification: "Suggested"
+    problem_addressed: "Requirements mandate multiple verification steps but don't specify how to document that verifications were performed. This creates audit trail of verification activities."
+    impact: "Provides documented proof that all required verifications were performed, supports audit requirements, helps reviewers track what has been checked"
+    priority: "Medium"
+    business_rules:
+      - "Log every verification activity (watch list check, certification verification, transcript review)"
+      - "Timestamp and user tracking for audit purposes"
+      - "Support demonstration of compliance with verification requirements"
+    attributes:
+      - name: "verification_log_id"
+        type: "INTEGER"
+        required: true
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Suggested"
+        description: "Foreign key to application being verified"
+      - name: "verification_type"
+        type: "TEXT"
+        required: true
+        max_length: 50
+        indexed: true
+        allowed_values: ["OSHA Watch List Check", "Internal Watch List Check", "CSP Certification Verification", "CIH Certification Verification", "CMC Certification Verification", "CHMM Certification Verification", "Transcript Verification", "Prerequisite Course Verification"]
+        source: "Suggested"
+        description: "Type of verification performed"
+      - name: "verification_date"
+        type: "DATETIME"
+        required: true
+        indexed: true
+        default_value: "CURRENT_TIMESTAMP"
+        source: "Suggested"
+        description: "Timestamp when verification was performed"
+      - name: "verified_by_user"
+        type: "USERNAME"
+        required: true
+        source: "Suggested"
+        description: "Reviewer who performed verification"
+      - name: "verification_result"
+        type: "TEXT"
+        required: true
+        max_length: 30
+        allowed_values: ["Pass", "Fail", "Not Found", "Found", "Expired", "Invalid"]
+        source: "Suggested"
+        description: "Result of verification check"
+      - name: "verification_notes"
+        type: "TEXT"
+        required: false
+        max_length: 2000
+        source: "Suggested"
+        description: "Detailed notes about verification (e.g., what was found, issues identified)"
+      - name: "external_reference"
+        type: "TEXT"
+        required: false
+        max_length: 200
+        source: "Suggested"
+        description: "External reference number or link (e.g., certification number verified)"
+    relationships:
+      - type: "many-to-one"
+        entity: "APPLICATION"
+        foreign_key: "application_id"
+        source_quote: "Verification activities for application review (line 78-80)"
+        business_rule: "Each verification log entry documents check for one application"
+        description: "Verification log entry belongs to one application"
+
+# === REFERENCE TABLES ===
+reference_tables:
+  - name: "DENIAL_REASON"
+    description: "Standard reasons for denying applications, ensuring consistent denial categorization"
+    source_quote: "If not approved, please indicate reason: Applicant did not demonstrate completion of prerequisite course within previous seven years / did not demonstrate required years of experience / did not include transcripts / did not submit proof of applicable certification or degree / did not sign form / Other (Appendix D, line 386-391)"
+    classification: "Required"
+    attributes:
+      - name: "denial_reason_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "denial_reason_code"
+        type: "TEXT"
+        required: true
+        unique: true
+        max_length: 20
+        source: "Best Practice"
+        description: "Short code for denial reason"
+      - name: "denial_reason_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Best Practice"
+        description: "Display name for denial reason"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying in lists"
+    known_values:
+      - "Did not demonstrate completion of prerequisite course within previous seven years"
+      - "Did not demonstrate required years of experience"
+      - "Did not include required transcripts"
+      - "Did not submit proof of applicable certification or degree"
+      - "Did not sign form"
+      - "Found on watch list without reinstatement"
+      - "Insufficient safety experience percentage"
+      - "Application submitted less than 2 weeks before course start"
+      - "Invalid or missing registration code for contract course"
+      - "Other"
+
+  - name: "US_STATE"
+    description: "United States state codes for address validation"
+    source_quote: "State: (Appendix D, line 257, 294)"
+    classification: "Required"
+    attributes:
+      - name: "state_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "state_code"
+        type: "TEXT"
+        required: true
+        unique: true
+        max_length: 2
+        source: "Best Practice"
+        description: "Two-letter state abbreviation"
+      - name: "state_name"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        source: "Best Practice"
+        description: "Full state name"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying in lists"
+    known_values:
+      - "AL - Alabama"
+      - "AK - Alaska"
+      - "AZ - Arizona"
+      - "[All 50 US states plus DC]"
+
+  - name: "COURSE_PREREQUISITE"
+    description: "Defines which prerequisite courses are required for each trainer course based on OSHA regulations"
+    source_quote: "OSHA #500 requires OSHA #510; OSHA #501 requires OSHA #511; OSHA #5400 requires OSHA #5410; OSHA #5600 requires #500, #501, or #5400 (Appendix B, line 217-220)"
+    classification: "Required"
+    problem_addressed: "System needs to dynamically determine which prerequisite courses to request based on courses selected in application"
+    attributes:
+      - name: "course_prerequisite_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "trainer_course_number"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        source: "Requirements"
+        source_quote: "Course prerequisite relationships (Appendix B)"
+        description: "Trainer course that requires prerequisite (e.g., #500)"
+      - name: "prerequisite_course_number"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        source: "Requirements"
+        source_quote: "Required prerequisite courses (Appendix B)"
+        description: "Course that is required as prerequisite (e.g., #510)"
+      - name: "is_alternative"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "OSHA #5600 requires #500 OR #501 OR #5400 (line 220)"
+        description: "Whether this is one of multiple alternative prerequisites"
+      - name: "alternative_group"
+        type: "INTEGER"
+        required: false
+        source: "Requirements"
+        source_quote: "Group alternatives together (e.g., #5600 can use any of 3 courses)"
+        description: "Group number for alternative prerequisites (same group = OR logic)"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying prerequisites"
+    known_values:
+      - "#500 requires #510"
+      - "#501 requires #511"
+      - "#5400 requires #5410"
+      - "#5600 requires #500 OR #501 OR #5400 (alternatives)"
+      - "#502 requires #500 (current)"
+      - "#503 requires #501 (current)"
+      - "#5402 requires #5400 (current)"
+      - "#5602 requires #5600"
+
+  - name: "EXPERIENCE_REQUIREMENT"
+    description: "Defines required years of experience for each course type based on OSHA regulations"
+    source_quote: "OSHA #500 and #501 require 5 years of experience; OSHA #5400 requires 5 years; OSHA #5600 requires 3 years of safety training experience (Appendix B, line 217-220)"
+    classification: "Required"
+    attributes:
+      - name: "experience_requirement_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "course_number"
+        type: "TEXT"
+        required: true
+        unique: true
+        max_length: 20
+        source: "Requirements"
+        source_quote: "Experience requirements per course (Appendix B)"
+        description: "Course number this requirement applies to"
+      - name: "required_years"
+        type: "INTEGER"
+        required: true
+        source: "Requirements"
+        source_quote: "Required years of experience (Appendix B)"
+        description: "Number of years of experience required"
+      - name: "experience_type"
+        type: "TEXT"
+        required: true
+        max_length: 100
+        source: "Requirements"
+        source_quote: "Type of experience required varies by course (Appendix B)"
+        description: "Type of experience (e.g., construction safety, general industry, maritime)"
+      - name: "substitution_allowed"
+        type: "BOOLEAN"
+        required: true
+        default_value: "true"
+        source: "Requirements"
+        source_quote: "Degree or certification may substitute for 2 years (line 217)"
+        description: "Whether education/certification substitution is allowed"
+      - name: "max_substitution_years"
+        type: "INTEGER"
+        required: false
+        default_value: "2"
+        source: "Requirements"
+        source_quote: "Maximum of 2 years can be substituted (line 67)"
+        description: "Maximum years that can be substituted via degree/certification"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying requirements"
+    known_values:
+      - "#500: 5 years construction safety experience"
+      - "#501: 5 years general industry safety experience"
+      - "#5400: 5 years maritime industry safety experience"
+      - "#5600: 3 years safety training experience"
+
+  - name: "CERTIFICATION_VERIFICATION_URL"
+    description: "External URLs for verifying professional certifications with certifying bodies"
+    source_quote: "Check claimed certifications in external websites accessible from Appian interface. URLs in Appendix-A: https://directory.bcsp.org/ (CSP), https://portalabih.cyzap.net (CIH/CHMM), https://marinechemistassociation.com (CMC) (line 80, Appendix A line 208-210)"
+    classification: "Required"
+    attributes:
+      - name: "verification_url_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "certification_type"
+        type: "TEXT"
+        required: true
+        unique: true
+        max_length: 10
+        source: "Requirements"
+        source_quote: "Certification types: CSP, CIH, CMC, CHMM (line 131)"
+        description: "Type of certification (CSP, CIH, CMC, CHMM)"
+      - name: "certifying_body_name"
+        type: "TEXT"
+        required: true
+        max_length: 200
+        source: "Requirements"
+        source_quote: "Board of Certified Safety Professionals, ABIH, Marine Chemist Association (Appendix A)"
+        description: "Name of certifying organization"
+      - name: "verification_url"
+        type: "TEXT"
+        required: true
+        max_length: 500
+        validation: "url_format"
+        source: "Requirements"
+        source_quote: "External verification URLs (Appendix A, line 208-210)"
+        description: "URL for verification lookup"
+      - name: "instructions"
+        type: "TEXT"
+        required: false
+        max_length: 1000
+        source: "Requirements"
+        source_quote: "Instructions for using verification system"
+        description: "Instructions for reviewer on how to use verification site"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying URLs"
+    known_values:
+      - "CSP: Board of Certified Safety Professionals - https://directory.bcsp.org/"
+      - "CIH: American Board of Industrial Hygiene - https://portalabih.cyzap.net/dzapps/dbzap.bin/apps/assess/webmembers/secure/manage?webid=ABIH&pToolCode=cert-search&pAdd=Yes"
+      - "CHMM: American Board of Industrial Hygiene - https://portalabih.cyzap.net/dzapps/dbzap.bin/apps/assess/webmembers/secure/manage?webid=ABIH&pToolCode=cert-search&pAdd=Yes"
+      - "CMC: Marine Chemist Association - https://marinechemistassociation.com/find-a-chemist/"
+
+  - name: "WATCH_LIST_URL"
+    description: "External URLs for checking OSHA and other official watch lists"
+    source_quote: "OSHA Outreach Trainer Watch List: https://www.osha.gov/training/outreach/trainers/watchlist (Appendix A, line 211)"
+    classification: "Required"
+    attributes:
+      - name: "watch_list_url_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Unique identifier"
+      - name: "watch_list_name"
+        type: "TEXT"
+        required: true
+        unique: true
+        max_length: 100
+        source: "Requirements"
+        source_quote: "OSHA Outreach Trainer Watch List (line 128)"
+        description: "Name of watch list"
+      - name: "watch_list_url"
+        type: "TEXT"
+        required: true
+        max_length: 500
+        validation: "url_format"
+        source: "Requirements"
+        source_quote: "https://www.osha.gov/training/outreach/trainers/watchlist (Appendix A, line 211)"
+        description: "URL to access watch list"
+      - name: "instructions"
+        type: "TEXT"
+        required: false
+        max_length: 1000
+        source: "Requirements"
+        source_quote: "Instructions for checking watch list"
+        description: "Instructions for reviewer on how to check watch list"
+      - name: "display_order"
+        type: "INTEGER"
+        required: false
+        source: "Best Practice"
+        description: "Order for displaying URLs"
+    known_values:
+      - "OSHA Outreach Trainer Watch List: https://www.osha.gov/training/outreach/trainers/watchlist"
+
+# === JUNCTION TABLES ===
+junction_tables:
+  # No additional junction tables needed beyond APPLICATION_COURSE which is already defined as a primary entity
+  # with additional attributes (registration_code, validation_status, signed_pdf) that make it more than
+  # just a pure junction table.
+
+  - name: "APPLICANT_WATCH_LIST_MATCH"
+    description: "Tracks when applicants are found to match entries in the watch list during application review, supporting reinstatement workflow"
+    source_quote: "Reviewer checks against internal watch list. Applicants found on watch list can only be approved if they provide official reinstatement letter from OSHA (line 78-79)"
+    classification: "Required"
+    business_rule: "When reviewer finds applicant on watch list, create match record to track reinstatement status and approval override"
+    attributes:
+      - name: "applicant_watch_list_match_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Surrogate key for Appian compatibility"
+      - name: "application_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION.application_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Watch list check performed during application review (line 78)"
+        description: "Foreign key to application being reviewed"
+      - name: "watch_list_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "WATCH_LIST.watch_list_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Match to internal watch list entry (line 78)"
+        description: "Foreign key to matched watch list entry"
+      - name: "match_date"
+        type: "DATETIME"
+        required: true
+        default_value: "CURRENT_TIMESTAMP"
+        source: "Requirements"
+        source_quote: "Date when match was identified"
+        description: "Timestamp when match was found"
+      - name: "matched_by_user"
+        type: "USERNAME"
+        required: true
+        source: "Requirements"
+        source_quote: "Reviewer who found match (line 78)"
+        description: "Reviewer who identified this match"
+      - name: "match_confidence"
+        type: "TEXT"
+        required: true
+        max_length: 20
+        allowed_values: ["Exact", "Likely", "Possible"]
+        source: "Requirements"
+        source_quote: "Match may be exact or potential based on name/email similarity"
+        description: "Confidence level of match (Exact name+email / Likely name / Possible partial)"
+      - name: "has_reinstatement_letter"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "Can only be approved if they provide reinstatement letter (line 79)"
+        description: "Whether applicant has provided reinstatement letter"
+      - name: "reinstatement_letter_document_id"
+        type: "DOCUMENT"
+        required: false
+        source: "Requirements"
+        source_quote: "Official reinstatement letter from OSHA (line 79)"
+        description: "Uploaded reinstatement letter if provided"
+      - name: "override_approved"
+        type: "BOOLEAN"
+        required: true
+        default_value: "false"
+        source: "Requirements"
+        source_quote: "Administrative override may allow approval despite match"
+        description: "Whether override was approved to proceed despite watch list match"
+      - name: "override_justification"
+        type: "TEXT"
+        required: false
+        max_length: 2000
+        conditional_required: "override_approved = true"
+        source: "Requirements"
+        source_quote: "Justification required for override decisions"
+        description: "Required justification if override approved"
+      - name: "resolution"
+        type: "TEXT"
+        required: false
+        max_length: 30
+        allowed_values: ["Pending", "Approved with Reinstatement", "Denied", "False Positive", "Override Approved"]
+        source: "Requirements"
+        source_quote: "Track resolution of watch list match (line 78-79)"
+        description: "How this watch list match was resolved"
+    unique_constraints:
+      - fields: ["application_id", "watch_list_id"]
+        description: "Prevent duplicate match records for same application and watch list entry"
+
+  - name: "APPLICATION_COURSE_PREREQUISITE"
+    description: "Junction table tracking which prerequisite courses satisfy requirements for which application courses"
+    source_quote: "Prerequisite verification must be performed for each course within the application (line 81). Applicant can apply for multiple courses requiring different prerequisites."
+    classification: "Required"
+    business_rule: "Links prerequisite course completions to specific application courses to show which prerequisites satisfy which course requirements"
+    attributes:
+      - name: "application_course_prerequisite_id"
+        type: "INTEGER"
+        primary_key: true
+        auto_increment: true
+        source: "Best Practice"
+        description: "Surrogate key for Appian compatibility"
+      - name: "application_course_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "APPLICATION_COURSE.application_course_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Each application course needs prerequisite validation (line 81)"
+        description: "Foreign key to application course requiring prerequisite"
+      - name: "prerequisite_course_id"
+        type: "INTEGER"
+        required: true
+        foreign_key: "PREREQUISITE_COURSE.prerequisite_course_id"
+        indexed: true
+        source: "Requirements"
+        source_quote: "Prerequisite courses documented for application (line 261)"
+        description: "Foreign key to prerequisite course that satisfies requirement"
+      - name: "satisfies_requirement"
+        type: "BOOLEAN"
+        required: true
+        default_value: "true"
+        source: "Requirements"
+        source_quote: "Track which prerequisites satisfy which course requirements"
+        description: "Whether this prerequisite satisfies the requirement for this course"
+    unique_constraints:
+      - fields: ["application_course_id", "prerequisite_course_id"]
+        description: "Prevent duplicate prerequisite assignments to same application course"
+
+# === BUSINESS RULE DOCUMENTATION ===
+
+# === VALIDATION RULES ===
+# 1. Application submission deadline: APPLICATION.submitted_date must be at least 14 days before COURSE.start_date (line 88)
+# 2. Prerequisite course validity: PREREQUISITE_COURSE.completion_date must be within 7 years of application submission for #510, #511, #5410 (line 92)
+# 3. Certification expiration: CERTIFICATION.expiration_date must be after COURSE.start_date (line 91)
+# 4. Experience calculation: Sum of WORK_EXPERIENCE.qualifying_years must meet EXPERIENCE_REQUIREMENT.required_years minus substitution (line 217-220)
+# 5. Safety percentage threshold: WORK_EXPERIENCE.percent_safety_related >= 35% (hidden business rule, line 87)
+# 6. Experience substitution limit: Maximum 2 years can be substituted via EDUCATION or CERTIFICATION (line 67)
+# 7. Contract course registration: APPLICATION_COURSE.registration_code_entered must match COURSE_REGISTRATION_CODE.registration_code when COURSE.is_contract = true (line 70)
+# 8. Work experience hours: WORK_EXPERIENCE.hours_per_week_safety <= WORK_EXPERIENCE.hours_per_week_total
+# 9. Work experience hours: WORK_EXPERIENCE.hours_per_week_total <= 168 (hours in week)
+# 10. Employment dates: WORK_EXPERIENCE.end_date must be after WORK_EXPERIENCE.start_date (or null if current)
+# 11. Watch list clearance: If APPLICANT_WATCH_LIST_MATCH exists with resolution != "False Positive", must have reinstatement letter or override to approve
+# 12. DocuSign requirement: APPLICATION.docusign_envelope_id required when APPLICATION.application_status = "Submitted" (line 72)
+# 13. OSHA correspondence: If APPLICATION.has_previous_revocation = true, must have SUPPORTING_DOCUMENT with document_type = "OSHA Correspondence" (line 372)
+
+# === STATUS WORKFLOW ===
+# APPLICATION.application_status transitions:
+# 1. Draft → Submitted (applicant completes wizard and signs)
+# 2. Submitted → Under Review (approver claims application)
+# 3. Under Review → Approved (approver approves after verification)
+# 4. Under Review → Denied (approver denies with reason)
+# 5. Under Review → Returned for Information (approver requests additional info)
+# 6. Returned for Information → Re-submitted (applicant provides requested info)
+# 7. Re-submitted → Under Review (approver reviews resubmission)
+# 8. Any non-terminal status → Withdrawn (applicant withdraws application)
+
+# === REPORTING REQUIREMENTS ===
+# Based on line 154-157:
+# - Task Report: Applications by status, assigned reviewer, days in status
+# - Completed Report: Searchable by applicant or date range
+# - Approved Applicants per Class: For facilitators, grouped by COURSE
+# - Application Statistics: Volume, approval rates, historical trends
+# - Application and course enrollment data: Integration with Enrole
+
+# === TEMPORAL CONSTRAINTS ===
+# - PREREQUISITE_COURSE: 7-year validity window from completion_date (line 92)
+# - CERTIFICATION: Must not expire before COURSE.start_date (line 91)
+# - APPLICATION: Must be submitted >= 14 days before COURSE.start_date (line 88)
+# - WATCH_LIST: Monthly updates required (line 93)
+# - COURSE: Monthly import of 12 months forward (line 93)
+# - Trainer cards: Valid within 10 years for update courses (line 221)
+
+# === INTEGRATION POINTS ===
+# - COURSE: Synced from Enrole via Informer (line 106-107)
+# - APPLICANT.appian_username: References Appian user management (line 45)
+# - APPLICATION.approved_by_user, assigned_reviewer: References Appian user management
+# - APPLICATION.docusign_envelope_id: Integration with DocuSign API (line 119)
+# - CERTIFICATION_VERIFICATION_URL: Links to external certification verification systems (line 116)
+# - WATCH_LIST_URL: Links to external OSHA watch list (line 128)
+# - WATCH_LIST: Monthly import from spreadsheet (line 110)
+
+# === GAPS AND VALIDATION REQUIREMENTS ===
+
+# HIGH-RISK GAPS:
+# 1. DocuSign integration details not fully specified - need to understand envelope creation, signing ceremony, and signed PDF retrieval process
+# 2. Enrole course data format and sync mechanism unclear - CSV vs API vs synced record details needed
+# 3. Version comparison mechanism for returned applications not specified - need to understand what data changes to track
+# 4. Email notification triggers and templates not defined - need to specify all notification scenarios
+
+# MEDIUM-RISK GAPS:
+# 1. Registration code generation and distribution process not described - how codes are created and assigned to institutions
+# 2. Watch list import file format not fully specified - need exact column names and data types for monthly import
+# 3. Course capacity management and overbooking rules not defined - what happens when course reaches max_capacity
+# 4. Facilitator and Leadership personas mentioned but workflows not detailed - need to understand their full requirements
+# 5. AI-assisted review mentioned (line 82) but scope and implementation not defined
+
+# LOW-RISK GAPS:
+# 1. Degree major validation rules beyond "occupational safety" and "industrial hygiene" not specified
+# 2. File upload size limits and format restrictions not fully documented beyond general mentions
+# 3. Email template content and formatting not specified
+# 4. Report export formats and scheduling details not fully defined
+
+# STAKEHOLDER VALIDATION QUESTIONS:
+# 1. DocuSign: How should re-signing work when application is edited after return? New envelope or amend existing?
+# 2. Watch List: Should false positive matches be permanently marked or re-checked on subsequent applications?
+# 3. Course Registration: Can same registration code be used multiple times or is it single-use per applicant?
+# 4. Experience Calculation: How should overlapping employment dates be handled if applicant has concurrent jobs?
+# 5. Prerequisite Verification: For non-USF certificates, what is the process flow for phone/email verification?
+# 6. Version Comparison: What specific fields should be highlighted as "changed" when comparing application versions?
+# 7. Certification Substitution: Can applicant claim both degree AND certification for total 4 years substitution, or max 2 years regardless?
+# 8. Contract Courses: Should all future courses be visible even if contract, or should contract courses be hidden until code entered?
+# 9. Application Withdrawal: Can withdrawn applications be reopened or must applicant start fresh application?
+# 10. Watch List Override: What approval level is required for override - same approver, senior approver, or administrator?
+
+# ENHANCEMENT VALIDATION QUESTIONS:
+# 1. APPLICATION_STATUS_HISTORY: Should this track field-level changes or just status transitions?
+# 2. VERIFICATION_LOG: Should failed verification attempts be logged or only successful verifications?
+# 3. Should we add a REVIEW_CHECKLIST table to formalize the review process steps?
+# 4. Should we track NOTIFICATION_LOG for audit trail of all emails sent?
+# 5. Should we add APPLICATION_ATTACHMENT for documents uploaded during review (separate from applicant documents)?
+
+# PROTOTYPE SCENARIOS:
+# 1. Test multi-course application where one course is approved and another denied - ensure data model supports split outcomes
+# 2. Test application returned twice with different information requests - ensure comment threading and version tracking works
+# 3. Test applicant with both degree and certification - verify substitution calculation logic
+# 4. Test contract course with invalid registration code - ensure validation prevents submission
+# 5. Test prerequisite course exactly 7 years old - verify date calculation boundary conditions
+# 6. Test watch list match with reinstatement letter - ensure approval workflow functions
+# 7. Test applicant applying for #5600 with #500 prerequisite (one of three alternatives) - ensure alternative prerequisite logic works
